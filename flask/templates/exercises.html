@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exercises - Diabetes Health App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --primary: #0b74ff;
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+      --radius: 16px;
+      font-family: system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .navbar-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+    }
+    .navbar-right span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a {
+      color: #e5f0ff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a:hover { text-decoration: underline; }
+
+    /* PAGE LAYOUT */
+    .page {
+      max-width: 1100px;
+      margin: 24px auto 40px;
+      padding: 0 18px;
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .breadcrumb a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #0ea5e9;
+    }
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      color: var(--text-main);
+    }
+    .subtitle-main {
+      margin-top: 4px;
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* GOALS BANNER */
+    .goals-banner {
+      background: #06b6d4;
+      color: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .goals-text-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .goals-amount {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: right;
+    }
+    .goals-amount span {
+      display: block;
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    /* GRID LAYOUT */
+    .top-grid, .bottom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card-section {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 9px 16px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .card-header.green { background: #15803d; }
+    .card-header.blue { background: #2563eb; }
+    .card-header.yellow { background: #f59e0b; }
+    .card-header.red { background: #dc2626; }
+
+    .exercise-list {
+      padding: 10px 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .exercise-item {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 8px 10px;
+    }
+    .exercise-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+    .exercise-duration {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .exercise-desc {
+      font-size: 13px;
+      color: #374151;
+    }
+
+    /* ✅ FIXED SAFETY TIPS STYLES */
+    .safety-list {
+      list-style: none;
+      margin: 0;
+      padding: 10px 18px 12px;
+      font-size: 14px;
+      color: #374151;           /* dark grey text so it's visible */
+      background: #fff;         /* white background for tips area */
+    }
+    .safety-list li {
+      margin-bottom: 6px;
+      position: relative;
+      padding-left: 18px;
+    }
+    .safety-list li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 13px;
+      color: #16a34a;          /* green check icon */
+    }
+
+    /* WEEKLY PLAN */
+    .plan-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .plan-header {
+      background: #4b5563;
+      color: #fff;
+      padding: 9px 16px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    table.plan-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .plan-table th, .plan-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: center;
+    }
+    .plan-table th {
+      background: #f3f4f6;
+      font-weight: 600;
+    }
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: #fff;
+    }
+    .pill-walk { background: #16a34a; }
+    .pill-strength { background: #2563eb; }
+    .pill-swim { background: #0ea5e9; }
+    .pill-yoga { background: #f59e0b; }
+    .pill-rest { background: #6b7280; }
+
+    /* BUTTON + FOOTER */
+    .button-row {
+      margin-top: 18px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #4b5563;
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-back:hover { background: #374151; }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 24px; }
+      .goals-banner {
+        grid-template-columns: 1fr;
+        text-align: left;
+      }
+      .goals-amount { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-icon">♥</div>
+      <span>Diabetes Health App</span>
+    </div>
+    <div class="navbar-right">
+      <span>👤 {{ session.get("user_name", "User") }}</span>
+      <a href="{{ url_for('dashboard') }}">▢ Dashboard</a>
+      <a href="{{ url_for('logout') }}">⇦ Logout</a>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="page">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <span> / Exercises</span>
+    </div>
+
+    <!-- Title -->
+    <div class="header-row">
+      <div class="header-icon">🚴</div>
+      <h1>Exercise Guide for Diabetes</h1>
+    </div>
+    <p class="subtitle-main">
+      Physical activities to help manage blood sugar and improve health
+    </p>
+
+    <!-- Goals Banner -->
+    <section class="goals-banner">
+      <div>
+        <div class="goals-text-title">Exercise Goals for Diabetes Management</div>
+        <div style="font-size:14px;">
+          Aim for at least 150 minutes of moderate-intensity aerobic activity per week,
+          spread over at least 3 days with no more than 2 consecutive days without activity.
+        </div>
+      </div>
+      <div class="goals-amount">
+        150+<span>minutes per week</span>
+      </div>
+    </section>
+
+    <!-- Top Grid -->
+    <section class="top-grid">
+      <!-- Aerobic -->
+      <article class="card-section">
+        <div class="card-header green">Aerobic Exercises</div>
+        <div class="exercise-list">
+          <div class="exercise-item">
+            <div class="exercise-title">🚶 Walking</div>
+            <div class="exercise-duration">Duration: 30 minutes daily</div>
+            <div class="exercise-desc">
+              Brisk walking is one of the best exercises for diabetics. Start slow and
+              gradually increase pace and duration.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">🏊 Swimming</div>
+            <div class="exercise-duration">Duration: 20–30 minutes, 3× per week</div>
+            <div class="exercise-desc">
+              Low-impact exercise that’s easy on joints. Great for improving cardiovascular health.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">🚴 Cycling</div>
+            <div class="exercise-duration">Duration: 30 minutes, 3–5× per week</div>
+            <div class="exercise-desc">
+              Can be done outdoors or on a stationary bike. Helps build endurance and leg strength.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">🎵 Dancing</div>
+            <div class="exercise-duration">Duration: 20–30 minutes</div>
+            <div class="exercise-desc">
+              Fun way to exercise that improves coordination and cardiovascular health.
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Strength -->
+      <article class="card-section">
+        <div class="card-header blue">Strength Training</div>
+        <div class="exercise-list">
+          <div class="exercise-item">
+            <div class="exercise-title">🟢 Resistance Bands</div>
+            <div class="exercise-duration">Duration: 15–20 minutes, 2–3× per week</div>
+            <div class="exercise-desc">
+              Great for beginners. Works all major muscle groups with minimal equipment.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">📦 Bodyweight Exercises</div>
+            <div class="exercise-duration">Duration: 20 minutes, 2–3× per week</div>
+            <div class="exercise-desc">
+              Squats, lunges, push-ups, and planks. No equipment needed.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">🏋 Light Weights</div>
+            <div class="exercise-duration">Duration: 20–30 minutes, 2–3× per week</div>
+            <div class="exercise-desc">
+              Start with light weights (2–5 kg) and gradually increase as strength improves.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">🪑 Chair Exercises</div>
+            <div class="exercise-duration">Duration: 15–20 minutes</div>
+            <div class="exercise-desc">
+              Perfect for those with mobility issues. Seated leg lifts, arm circles, and stretches.
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Bottom Grid -->
+    <section class="bottom-grid">
+      <!-- Flexibility -->
+      <article class="card-section">
+        <div class="card-header yellow">Flexibility &amp; Balance</div>
+        <div class="exercise-list">
+          <div class="exercise-item">
+            <div class="exercise-title">🧘 Yoga</div>
+            <div class="exercise-duration">Duration: 20–30 minutes, 2–3× per week</div>
+            <div class="exercise-desc">
+              Improves flexibility, reduces stress, and may help lower blood sugar levels.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">☯ Tai Chi</div>
+            <div class="exercise-duration">Duration: 20–30 minutes</div>
+            <div class="exercise-desc">
+              Gentle flowing movements that improve balance, flexibility, and mental focus.
+            </div>
+          </div>
+          <div class="exercise-item">
+            <div class="exercise-title">📏 Stretching</div>
+            <div class="exercise-duration">Duration: 10–15 minutes daily</div>
+            <div class="exercise-desc">
+              Essential before and after exercise. Helps prevent injury and improves range of motion.
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Safety Tips -->
+      <article class="card-section">
+        <div class="card-header red">Safety Tips</div>
+        <ul class="safety-list">
+          <li>Check blood sugar before and after exercise.</li>
+          <li>Stay hydrated – drink water before, during, and after.</li>
+          <li>Wear comfortable shoes and check feet for blisters.</li>
+          <li>Carry fast-acting glucose in case of low blood sugar.</li>
+          <li>Start slowly and gradually increase intensity.</li>
+          <li>Stop if you feel dizzy, short of breath, or unwell.</li>
+          <li>Consult your doctor before starting a new exercise program.</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Weekly Plan -->
+    <section class="plan-card">
+      <div class="plan-header">🗓 Sample Weekly Exercise Plan</div>
+      <table class="plan-table">
+        <thead>
+          <tr>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+            <th>Sunday</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-walk">Walk</span><br/>30 min</td>
+            <td><span class="pill pill-strength">Strength</span><br/>20 min</td>
+            <td><span class="pill pill-swim">Swim</span><br/>25 min</td>
+            <td><span class="pill pill-yoga">Yoga</span><br/>30 min</td>
+            <td><span class="pill pill-walk">Walk</span><br/>30 min</td>
+            <td><span class="pill pill-strength">Strength</span><br/>20 min</td>
+            <td><span class="pill pill-rest">Rest</span><br/>Stretching</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Back button -->
+    <div class="button-row">
+      <a class="btn-back" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </div>
+
+    <div class="footer">
+      Diabetes Health App – Stay active, stay healthy
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diabetes Health App - {% block title %}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #0b74ff;
+      --primary-dark: #0055d4;
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 18px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .navbar-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+    }
+    .navbar-right a {
+      color: #e5f0ff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a:hover { text-decoration: underline; }
+    .navbar-right span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* PAGE WRAPPER */
+    .page {
+      max-width: 1100px;
+      margin: 26px auto;
+      padding: 0 18px 40px;
+    }
+
+    /* AUTH CARD */
+    .center-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .card {
+      background: var(--card-bg);
+      max-width: 430px;
+      width: 100%;
+      padding: 32px 32px 28px;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      background: #e0ecff;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 26px;
+    }
+    h1 { margin: 4px 0; color: var(--text-main); }
+    .subtitle { margin-bottom: 22px; font-size: 14px; color: var(--text-muted); }
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    input {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.35);
+    }
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      padding: 11px 0;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .footer-text {
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-text a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .footer-text a:hover { text-decoration: underline; }
+
+    /* DASHBOARD CARDS */
+    .headline { font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+    .subtitle-main { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+    .card-dashboard {
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 22px 20px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 180px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .card-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .card-title { font-size: 18px; font-weight: 600; color: var(--text-main); }
+    .card-body { flex: 1; font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+
+    .btn-outline {
+      align-self: flex-start;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      padding: 7px 16px;
+      background: transparent;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .blue { background: #e0ecff; color: #1769ff; }
+    .green { background: #dcfce7; color: #16a34a; }
+    .yellow { background: #fef3c7; color: #f59e0b; }
+    .red { background: #fee2e2; color: #ef4444; }
+    .cyan { background: #cffafe; color: #06b6d4; }
+
+    @media (max-width: 640px) {
+      .headline { font-size: 26px; }
+      .navbar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-icon">♥</div>
+      <span>Diabetes Health App</span>
+    </div>
+    <div class="navbar-right">
+      {% if session.get("user_name") %}
+        <span>👤 {{ session["user_name"] }}</span>
+        <a href="{{ url_for('dashboard') }}">▢ Dashboard</a>
+        <a href="{{ url_for('logout') }}">⇦ Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+</body>
+</html>

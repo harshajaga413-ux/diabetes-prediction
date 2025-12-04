@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<main class="page">
+  <h1 class="headline">Welcome, {{ session["user_name"] }}!</h1>
+  <p class="subtitle-main">
+    Your personal diabetes health management center
+  </p>
+
+  <section class="cards">
+    <!-- Precautions -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle blue">🛡️</div>
+        <div class="card-title">Precautions</div>
+      </div>
+      <div class="card-body">
+        Learn essential precautions and preventive measures for managing diabetes effectively.
+      </div>
+      <a class="btn-outline blue" href="{{ url_for('precautions') }}">→ Open</a>
+    </article>
+
+    <!-- Diet Plans -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle green">🥗</div>
+        <div class="card-title">Diet Plans</div>
+      </div>
+      <div class="card-body">
+        Discover recommended diets and meal plans to maintain healthy blood sugar levels.
+      </div>
+      <a class="btn-outline green" href="{{ url_for('diet') }}">→ Open</a>
+    </article>
+
+    <!-- Sugar Levels -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle yellow">🔍</div>
+        <div class="card-title">Sugar Levels</div>
+      </div>
+      <div class="card-body">
+        Look up sugar content in common foods to make informed dietary choices.
+      </div>
+      <a class="btn-outline yellow" href="{{ url_for('sugar_levels') }}">→ Open</a>
+    </article>
+
+    <!-- Risk Calculator -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle red">🧮</div>
+        <div class="card-title">Risk Calculator</div>
+      </div>
+      <div class="card-body">
+        Calculate your diabetes risk based on health metrics and predictive models.
+      </div>
+      <a class="btn-outline red" href="{{ url_for('calculator') }}">→ Open</a>
+    </article>
+
+    <!-- Exercises -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle cyan">🚴</div>
+        <div class="card-title">Exercises</div>
+      </div>
+      <div class="card-body">
+        Explore recommended exercises and activity routines to support diabetes management.
+      </div>
+      <a class="btn-outline cyan" href="{{ url_for('exercises') }}">→ Open</a>
+    </article>
+  </section>
+</main>
+{% endblock %}

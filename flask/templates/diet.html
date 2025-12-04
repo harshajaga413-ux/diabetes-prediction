@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diet Plans - Diabetes Health App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --primary: #0b74ff;
+      --primary-dark: #0055d4;
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+      --radius: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .navbar-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+    }
+    .navbar-right span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a {
+      color: #e5f0ff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a:hover { text-decoration: underline; }
+
+    /* PAGE LAYOUT */
+    .page {
+      max-width: 1100px;
+      margin: 24px auto 40px;
+      padding: 0 18px;
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .breadcrumb a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #e0ecff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #15803d;
+    }
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      color: var(--text-main);
+    }
+    .subtitle-main {
+      margin-top: 4px;
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* TOP GRID: foods to include / avoid */
+    .diet-grid-top {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .card-section {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 10px 16px;
+      font-weight: 600;
+      color: #fff;
+      font-size: 15px;
+    }
+    .card-header.green { background: #15803d; }
+    .card-header.red { background: #b91c1c; }
+
+    .card-content {
+      padding: 10px 18px 14px;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+    .card-content h3 {
+      margin: 4px 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .card-content p {
+      margin: 0 0 6px;
+      color: #374151;
+    }
+
+    /* DAILY MEAL PLAN */
+    .meal-plan-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .meal-plan-header {
+      background: #2563eb;
+      color: #fff;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .meal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      padding: 12px 16px 12px;
+    }
+    .meal-card {
+      border-radius: 14px;
+      background: #f9fafb;
+      padding: 10px 12px;
+    }
+    .meal-card h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .meal-card ul {
+      margin: 0 0 6px;
+      padding-left: 15px;
+      font-size: 14px;
+    }
+    .meal-cal {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .snack-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      padding: 0 16px 14px;
+      font-size: 14px;
+    }
+    .snack-box {
+      border-radius: 12px;
+      background: #f3f4ff;
+      padding: 8px 10px;
+    }
+    .snack-box h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* BOTTOM GRID: portion control + timing */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 4px;
+    }
+    .bottom-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .bottom-header.blue { background: #06b6d4; }
+    .bottom-header.gray { background: #4b5563; }
+    .bottom-header {
+      color: #fff;
+      padding: 9px 16px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .bottom-list {
+      list-style: none;
+      margin: 0;
+      padding: 10px 18px 12px;
+      font-size: 14px;
+      color: #374151;
+    }
+    .bottom-list li {
+      margin-bottom: 6px;
+    }
+
+    /* BUTTON ROW */
+    .button-row {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #4b5563;
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-back:hover { background: #374151; }
+
+    .btn-sugar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      background: #fbbf24;
+      color: #78350f;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-sugar:hover { background: #f59e0b; }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 24px; }
+      .meal-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-icon">♥</div>
+      <span>Diabetes Health App</span>
+    </div>
+    <div class="navbar-right">
+      <span>👤 {{ session.get("user_name", "User") }}</span>
+      <a href="{{ url_for('dashboard') }}">▢ Dashboard</a>
+      <a href="{{ url_for('logout') }}">⇦ Logout</a>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="page">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <span> / Diet Plans</span>
+    </div>
+
+    <!-- Heading -->
+    <div class="header-row">
+      <div class="header-icon">🌿</div>
+      <h1>Diabetes Diet Guide</h1>
+    </div>
+    <p class="subtitle-main">
+      Nutritional recommendations for managing blood sugar levels
+    </p>
+
+    <!-- FOODS GRID -->
+    <section class="diet-grid-top">
+      <!-- Foods to include -->
+      <article class="card-section">
+        <div class="card-header green">Foods to Include</div>
+        <div class="card-content">
+          <h3>Non-Starchy Vegetables</h3>
+          <p>Broccoli, spinach, green beans, peppers, tomatoes, cauliflower</p>
+
+          <h3>Lean Proteins</h3>
+          <p>Chicken breast, fish, eggs, tofu, legumes, low-fat dairy</p>
+
+          <h3>Whole Grains</h3>
+          <p>Brown rice, quinoa, oatmeal, whole wheat bread, barley</p>
+
+          <h3>Healthy Fats</h3>
+          <p>Avocado, olive oil, nuts, seeds, fatty fish (salmon, mackerel)</p>
+
+          <h3>Low-Glycemic Fruits</h3>
+          <p>Berries, apples, pears, citrus fruits, cherries</p>
+        </div>
+      </article>
+
+      <!-- Foods to limit -->
+      <article class="card-section">
+        <div class="card-header red">Foods to Limit or Avoid</div>
+        <div class="card-content">
+          <h3>Sugary Foods</h3>
+          <p>Candy, cookies, cake, ice cream, sweetened cereals</p>
+
+          <h3>Refined Carbohydrates</h3>
+          <p>White bread, white rice, regular pasta, pastries</p>
+
+          <h3>Sugary Beverages</h3>
+          <p>Soda, fruit juice, sweetened tea, energy drinks</p>
+
+          <h3>Fried Foods</h3>
+          <p>French fries, fried chicken, donuts, chips</p>
+
+          <h3>Processed Foods</h3>
+          <p>Packaged snacks, processed meats, fast food</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- DAILY MEAL PLAN -->
+    <section class="meal-plan-card">
+      <div class="meal-plan-header">
+        📅 Sample Daily Meal Plan
+      </div>
+
+      <div class="meal-grid">
+        <div class="meal-card">
+          <h3>☀ Breakfast</h3>
+          <ul>
+            <li>Oatmeal with berries and walnuts</li>
+            <li>1 boiled egg</li>
+            <li>Unsweetened green tea</li>
+          </ul>
+          <div class="meal-cal">~350 calories</div>
+        </div>
+
+        <div class="meal-card">
+          <h3>🌞 Lunch</h3>
+          <ul>
+            <li>Grilled chicken salad</li>
+            <li>Mixed vegetables with olive oil</li>
+            <li>1/2 cup brown rice</li>
+          </ul>
+          <div class="meal-cal">~450 calories</div>
+        </div>
+
+        <div class="meal-card">
+          <h3>🌙 Dinner</h3>
+          <ul>
+            <li>Baked salmon with herbs</li>
+            <li>Steamed broccoli and carrots</li>
+            <li>Quinoa pilaf</li>
+          </ul>
+          <div class="meal-cal">~500 calories</div>
+        </div>
+      </div>
+
+      <div class="snack-row">
+        <div class="snack-box">
+          <h4>🥛 Morning Snack</h4>
+          Greek yogurt with a handful of almonds (~150 calories)
+        </div>
+        <div class="snack-box">
+          <h4>🍎 Evening Snack</h4>
+          Apple slices with 1 tbsp peanut butter (~150 calories)
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM GRID -->
+    <section class="bottom-grid">
+      <article class="bottom-card">
+        <div class="bottom-header blue">Portion Control Tips</div>
+        <ul class="bottom-list">
+          <li>Use the plate method: 1/2 vegetables, 1/4 protein, 1/4 carbs.</li>
+          <li>Use smaller plates to control portions.</li>
+          <li>Measure portions until you can estimate accurately.</li>
+          <li>Eat slowly and stop when about 80% full.</li>
+          <li>Drink water before meals to reduce appetite.</li>
+        </ul>
+      </article>
+
+      <article class="bottom-card">
+        <div class="bottom-header gray">Meal Timing Guidelines</div>
+        <ul class="bottom-list">
+          <li>Eat at regular times each day.</li>
+          <li>Don't skip meals, especially breakfast.</li>
+          <li>Space meals 4–5 hours apart when possible.</li>
+          <li>Have healthy snacks between meals if needed.</li>
+          <li>Avoid eating large meals late at night.</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- BUTTONS -->
+    <div class="button-row">
+      <a class="btn-back" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+      <a class="btn-sugar" href="{{ url_for('sugar_levels') }}">🔍 Check Sugar Levels in Foods</a>
+    </div>
+
+    <div class="footer">
+      Diabetes Health App – Eat smart to manage your blood sugar
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetes Risk Predictor</title>
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .feature-analysis {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        .feature-item {
+            margin: 10px 0;
+            padding: 5px;
+            border-left: 3px solid #4CAF50;
+        }
+        .confidence {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ddd;
+        }
+        .range-info {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login">
+        <h1>Diabetes Risk Predictor</h1>
+        <p style="color: #888; margin-bottom: 20px;">Enter your health metrics below for a diabetes risk assessment</p>
+        
+        <form action="{{ url_for('predict')}}" method="post">
+            <div class="form-group">
+                <label for="Glucose">Glucose Level</label>
+                <input type="number" name="Glucose" placeholder="70-200" required="required" min="0" max="300" />
+                <div class="range-info">Normal fasting range: 70-100 mg/dL</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="BloodPressure">Blood Pressure</label>
+                <input type="number" name="BloodPressure" placeholder="60-140" required="required" min="0" max="200" />
+                <div class="range-info">Normal range: 90/60 - 120/80 mm Hg</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="SkinThickness">Skin Thickness</label>
+                <input type="number" name="SkinThickness" placeholder="0-100" required="required" min="0" max="100" />
+                <div class="range-info">Triceps skin fold measurement (mm)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="Insulin">Insulin</label>
+                <input type="number" name="Insulin" placeholder="0-846" required="required" min="0" max="900" />
+                <div class="range-info">2-Hour serum insulin (mu U/ml)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="BMI">BMI</label>
+                <input type="number" step="0.1" name="BMI" placeholder="18.5-40" required="required" min="10" max="60" />
+                <div class="range-info">Normal range: 18.5-24.9</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="DiabetesPedigreeFunction">Diabetes Pedigree Function</label>
+                <input type="number" step="0.001" name="DiabetesPedigreeFunction" placeholder="0.0-2.5" required="required" min="0" max="3" />
+                <div class="range-info">Diabetes hereditary influence score</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="Age">Age</label>
+                <input type="number" name="Age" placeholder="21-90" required="required" min="0" max="120" />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-large">Analyze Risk</button>
+        </form>
+
+        {% if prediction %}
+        <div class="prediction-result">
+            <h2>{{ prediction }}</h2>
+            <p>Confidence: <span class="confidence">{{ confidence }}</span></p>
+            
+            <div class="feature-analysis">
+                <h3>Risk Factor Analysis</h3>
+                {% for feature in feature_analysis %}
+                <div class="feature-item">
+                    <strong>{{ feature.name }}:</strong> {{ feature.value }}
+                    <br>
+                    <small>Contribution to prediction: {{ feature.importance }}</small>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <p style="margin-top: 20px; color: #888;">
+                Note: This tool is for screening purposes only. Please consult with a healthcare professional for proper medical advice and diagnosis.
+            </p>
+        </div>
+        {% endif %}
+        
+        {% if error %}
+        <div class="error" style="color: #ff6b6b; margin-top: 20px;">
+            {{ error }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

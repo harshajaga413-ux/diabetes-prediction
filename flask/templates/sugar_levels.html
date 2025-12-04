@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sugar Levels - Diabetes Health App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --primary: #0b74ff;
+      --bg: #f5f7fb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+      --radius: 14px;
+      font-family: system-ui, sans-serif;
+    }
+    body { margin: 0; background: var(--bg); }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar-left {
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .navbar-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .navbar-right a {
+      color: #e5f0ff;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+
+    /* PAGE */
+    .page {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .breadcrumb {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .breadcrumb a { color: #2563eb; text-decoration: none; }
+
+    .header-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .header-icon {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: #fff7d6;
+      color: #d97706;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 26px;
+    }
+    h1 { margin: 0; font-size: 32px; }
+    .subtitle-main { color: var(--text-muted); margin-bottom: 20px; }
+
+    /* SEARCH CONTROLS */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .search-box, select {
+      background: white;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      width: 260px;
+    }
+
+    /* TABLE CARD */
+    .table-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .table-header {
+      background: #facc15;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 15px;
+    }
+    tr:hover { background: #f3f4f6; }
+
+    /* CATEGORY TAG */
+    .tag {
+      background: #6b7280;
+      padding: 3px 8px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    /* SUGAR LEVEL COLORS */
+    .low {
+      background: #16a34a;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .medium {
+      background: #f59e0b;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .high {
+      background: #dc2626;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    /* SUGAR RANGE FOOTER */
+    .legend-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .legend-box {
+      padding: 14px;
+      border-radius: var(--radius);
+      color: #fff;
+      text-align: center;
+      font-size: 16px;
+    }
+    .legend-low { background: #15803d; }
+    .legend-medium { background: #d97706; }
+    .legend-high { background: #b91c1c; }
+
+    .btn-back {
+      margin-top: 20px;
+      background: #4b5563;
+      color: #fff;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 999px;
+      text-decoration: none;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-icon">♥</div>
+      Diabetes Health App
+    </div>
+
+    <div class="navbar-right">
+      <span>👤 {{ session['user_name'] }}</span>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a> / Sugar Levels
+    </div>
+
+    <!-- Title -->
+    <div class="header-row">
+      <div class="header-icon">🔍</div>
+      <h1>Sugar Content in Foods</h1>
+    </div>
+    <p class="subtitle-main">Search and compare sugar levels per 100g serving</p>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <input type="text" class="search-box" placeholder="🔎 Search food name..." id="searchBox">
+      <select id="categoryFilter">
+        <option>All Categories</option>
+        <option>Fruit</option>
+        <option>Vegetable</option>
+        <option>Grain</option>
+        <option>Dairy</option>
+        <option>Sweets</option>
+        <option>Beverage</option>
+      </select>
+
+      <select id="sortFilter">
+        <option value="name">Name (A-Z)</option>
+        <option value="sugarLow">Sugar (Low → High)</option>
+        <option value="sugarHigh">Sugar (High → Low)</option>
+      </select>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <div class="table-header">📊 Food Sugar Content (per 100g)</div>
+      <table id="sugarTable">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Category</th>
+            <th>Sugar</th>
+            <th>Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- TABLE DATA (will be inserted by JavaScript) -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LEGENDS -->
+    <div class="legend-container">
+      <div class="legend-box legend-low">✔ Low Sugar<br><small>Less than 5g per 100g</small></div>
+      <div class="legend-box legend-medium">⚠ Medium Sugar<br><small>5–15g per 100g</small></div>
+      <div class="legend-box legend-high">✖ High Sugar<br><small>More than 15g per 100g</small></div>
+    </div>
+
+    <a href="{{ url_for('dashboard') }}" class="btn-back">← Back to Dashboard</a>
+
+  </main>
+
+  <script>
+    // FOOD SUGAR DATA
+    const foods = [
+      { name: "Apple", category: "Fruit", sugar: 10.4 },
+      { name: "Banana", category: "Fruit", sugar: 12.2 },
+      { name: "Orange", category: "Fruit", sugar: 9.4 },
+      { name: "Grapes", category: "Fruit", sugar: 16.3 },
+      { name: "Mango", category: "Fruit", sugar: 13.7 },
+      { name: "Strawberry", category: "Fruit", sugar: 4.9 },
+      { name: "Watermelon", category: "Fruit", sugar: 6.2 },
+      { name: "Pineapple", category: "Fruit", sugar: 9.9 },
+      { name: "White Bread", category: "Grain", sugar: 5.0 },
+      { name: "Brown Rice (cooked)", category: "Grain", sugar: 0.4 },
+      { name: "White Rice (cooked)", category: "Grain", sugar: 0.1 },
+      { name: "Oatmeal", category: "Grain", sugar: 0.5 },
+      { name: "Whole Milk", category: "Dairy", sugar: 5.0 },
+      { name: "Skim Milk", category: "Dairy", sugar: 5.1 },
+      { name: "Greek Yogurt (plain)", category: "Dairy", sugar: 3.6 },
+      { name: "Cheddar Cheese", category: "Dairy", sugar: 0.5 },
+      { name: "Milk Chocolate", category: "Sweets", sugar: 52.0 },
+      { name: "Dark Chocolate (70%)", category: "Sweets", sugar: 24.0 },
+      { name: "Honey", category: "Sweets", sugar: 82.0 },
+      { name: "Cola Soda", category: "Beverage", sugar: 10.6 },
+      { name: "Orange Juice", category: "Beverage", sugar: 8.4 },
+      { name: "Carrot", category: "Vegetable", sugar: 4.7 },
+      { name: "Tomato", category: "Vegetable", sugar: 2.6 },
+      { name: "Broccoli", category: "Vegetable", sugar: 1.7 },
+      { name: "Sweet Potato", category: "Vegetable", sugar: 4.2 }
+    ];
+
+    function sugarLevel(value) {
+      if (value < 5) return "low";
+      if (value <= 15) return "medium";
+      return "high";
+    }
+
+    function renderTable() {
+      let search = document.getElementById("searchBox").value.toLowerCase();
+      let category = document.getElementById("categoryFilter").value;
+      let sortType = document.getElementById("sortFilter").value;
+
+      let filtered = foods.filter(f =>
+        f.name.toLowerCase().includes(search) &&
+        (category === "All Categories" || f.category === category)
+      );
+
+      if (sortType === "name") filtered.sort((a,b)=>a.name.localeCompare(b.name));
+      if (sortType === "sugarLow") filtered.sort((a,b)=>a.sugar - b.sugar);
+      if (sortType === "sugarHigh") filtered.sort((a,b)=>b.sugar - a.sugar);
+
+      let tbody = document.querySelector("#sugarTable tbody");
+      tbody.innerHTML = "";
+
+      filtered.forEach(food => {
+        let level = sugarLevel(food.sugar);
+        tbody.innerHTML += `
+          <tr>
+            <td><b>${food.name}</b></td>
+            <td><span class="tag">${food.category}</span></td>
+            <td>${food.sugar}g</td>
+            <td><span class="${level}">${level.charAt(0).toUpperCase()+level.slice(1)}</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    document.getElementById("searchBox").addEventListener("input", renderTable);
+    document.getElementById("categoryFilter").addEventListener("change", renderTable);
+    document.getElementById("sortFilter").addEventListener("change", renderTable);
+
+    renderTable();
+  </script>
+
+</body>
+</html>

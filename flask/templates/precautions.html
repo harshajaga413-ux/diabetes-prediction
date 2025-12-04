@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Precautions - Diabetes Health App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --primary: #0b74ff;
+      --primary-dark: #0055d4;
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+      --radius: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* NAVBAR (same style as other pages) */
+    .navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .navbar-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+    }
+    .navbar-right span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a {
+      color: #e5f0ff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-right a:hover { text-decoration: underline; }
+
+    /* PAGE LAYOUT */
+    .page {
+      max-width: 1100px;
+      margin: 24px auto 40px;
+      padding: 0 18px;
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .breadcrumb a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #e0ecff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #2563eb;
+    }
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      color: var(--text-main);
+    }
+    .subtitle-main {
+      margin-top: 4px;
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* GRID OF CARDS */
+    .precautions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card-section {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 10px 16px;
+      font-weight: 600;
+      color: #fff;
+      font-size: 15px;
+    }
+    .card-header.blue { background: #2563eb; }
+    .card-header.green { background: #15803d; }
+    .card-header.yellow { background: #f59e0b; }
+    .card-header.cyan { background: #06b6d4; }
+
+    .card-list {
+      list-style: none;
+      margin: 0;
+      padding: 10px 18px 14px;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+    .card-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .card-list li span.icon {
+      color: #16a34a;
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    /* WARNING SECTION */
+    .warning-card {
+      background: #fee2e2;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 18px 12px;
+      margin-top: 8px;
+    }
+    .warning-header {
+      font-weight: 600;
+      font-size: 15px;
+      color: #b91c1c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .warning-header span.icon {
+      font-size: 18px;
+    }
+    .warning-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 6px 40px;
+      font-size: 14px;
+      color: #991b1b;
+    }
+    .warning-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .warning-item span.bullet {
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    /* BACK BUTTON */
+    .back-row {
+      margin-top: 18px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #4b5563;
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-back:hover {
+      background: #374151;
+    }
+
+    .footer {
+      margin-top: 22px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 24px; }
+      .precautions-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-icon">♥</div>
+      <span>Diabetes Health App</span>
+    </div>
+    <div class="navbar-right">
+      <span>👤 {{ session.get("user_name", "User") }}</span>
+      <a href="{{ url_for('dashboard') }}">▢ Dashboard</a>
+      <a href="{{ url_for('logout') }}">⇦ Logout</a>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="page">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <span> / Precautions</span>
+    </div>
+
+    <!-- Title -->
+    <div class="header-row">
+      <div class="header-icon">🛡️</div>
+      <h1>Diabetes Precautions</h1>
+    </div>
+    <p class="subtitle-main">
+      Essential guidelines to prevent and manage diabetes effectively
+    </p>
+
+    <!-- MAIN GRID -->
+    <section class="precautions-grid">
+      <!-- Blood Sugar Monitoring -->
+      <article class="card-section">
+        <div class="card-header blue">Blood Sugar Monitoring</div>
+        <ul class="card-list">
+          <li><span class="icon">✔</span><span>Monitor blood glucose levels regularly as advised by your doctor.</span></li>
+          <li><span class="icon">✔</span><span>Keep a log of your readings to track patterns.</span></li>
+          <li><span class="icon">✔</span><span>Know your target blood sugar range and stay within it.</span></li>
+          <li><span class="icon">✔</span><span>Recognize symptoms of high and low blood sugar.</span></li>
+          <li><span class="icon">✔</span><span>Always carry glucose tablets or fast-acting sugar with you.</span></li>
+        </ul>
+      </article>
+
+      <!-- Medication Management -->
+      <article class="card-section">
+        <div class="card-header green">Medication Management</div>
+        <ul class="card-list">
+          <li><span class="icon">✔</span><span>Take medications exactly as prescribed by your doctor.</span></li>
+          <li><span class="icon">✔</span><span>Never skip or double doses without medical advice.</span></li>
+          <li><span class="icon">✔</span><span>Store insulin properly (refrigerated if required).</span></li>
+          <li><span class="icon">✔</span><span>Check medication expiration dates regularly.</span></li>
+          <li><span class="icon">✔</span><span>Inform all healthcare providers about your diabetes.</span></li>
+        </ul>
+      </article>
+
+      <!-- Foot Care -->
+      <article class="card-section">
+        <div class="card-header yellow">Foot Care</div>
+        <ul class="card-list">
+          <li><span class="icon">✔</span><span>Inspect your feet daily for cuts, blisters, or sores.</span></li>
+          <li><span class="icon">✔</span><span>Wash and dry feet carefully, especially between toes.</span></li>
+          <li><span class="icon">✔</span><span>Wear comfortable, well-fitting shoes and clean socks.</span></li>
+          <li><span class="icon">✔</span><span>Never walk barefoot, even indoors.</span></li>
+          <li><span class="icon">✔</span><span>Have regular foot checkups with your doctor.</span></li>
+        </ul>
+      </article>
+
+      <!-- Regular Health Checkups -->
+      <article class="card-section">
+        <div class="card-header cyan">Regular Health Checkups</div>
+        <ul class="card-list">
+          <li><span class="icon">✔</span><span>Schedule regular eye exams (at least annually).</span></li>
+          <li><span class="icon">✔</span><span>Get kidney function tests as recommended.</span></li>
+          <li><span class="icon">✔</span><span>Monitor blood pressure and cholesterol levels.</span></li>
+          <li><span class="icon">✔</span><span>Visit your dentist regularly for oral health.</span></li>
+          <li><span class="icon">✔</span><span>Get HbA1c test every 3–6 months, as advised.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- WARNING SECTION -->
+    <section class="warning-card">
+      <div class="warning-header">
+        <span class="icon">⚠</span>
+        <span>Warning Signs – Seek Immediate Medical Help</span>
+      </div>
+      <div class="warning-grid">
+        <div class="warning-item">
+          <span class="bullet">!</span>
+          <span>Very high or very low blood sugar readings.</span>
+        </div>
+        <div class="warning-item">
+          <span class="bullet">!</span>
+          <span>Fruity-smelling breath or rapid breathing.</span>
+        </div>
+        <div class="warning-item">
+          <span class="bullet">!</span>
+          <span>Confusion, dizziness, or difficulty concentrating.</span>
+        </div>
+        <div class="warning-item">
+          <span class="bullet">!</span>
+          <span>Nausea, vomiting, or stomach pain.</span>
+        </div>
+        <div class="warning-item">
+          <span class="bullet">!</span>
+          <span>Excessive thirst or frequent urination.</span>
+        </div>
+        <div class="warning-item">
+          <span class="bullet">!</span>
+          <span>Wounds or infections that do not heal.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BACK BUTTON -->
+    <div class="back-row">
+      <a class="btn-back" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </div>
+
+    <div class="footer">
+      Diabetes Health App – Take control of your health
+    </div>
+  </main>
+</body>
+</html>
