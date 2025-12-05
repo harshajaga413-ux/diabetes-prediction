@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Food Search - GI & Sugar Index</title>
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .food-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .food-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .food-header h1 {
+            font-size: 32px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .food-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .search-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .search-hints {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .results-container {
+            margin-top: 30px;
+        }
+        
+        .food-result {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .food-header-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        
+        .food-emoji {
+            font-size: 40px;
+        }
+        
+        .food-name {
+            flex: 1;
+        }
+        
+        .food-name h2 {
+            margin: 0;
+            color: #333;
+            font-size: 22px;
+        }
+        
+        .food-portion {
+            color: #999;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+        
+        .gi-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-card {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .gi-category {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        
+        .gi-low {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .gi-medium {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .gi-high {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .advice-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 5px;
+            color: #004085;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        
+        .alternatives-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .alternatives-section h3 {
+            color: #333;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alternatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .alternative-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .alternative-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .alt-emoji {
+            font-size: 24px;
+        }
+        
+        .alt-name {
+            font-weight: bold;
+            color: #333;
+            margin: 8px 0 5px 0;
+            font-size: 14px;
+        }
+        
+        .alt-gi {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .alt-category {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .no-results h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .popular-foods {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .popular-foods h3 {
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+        
+        .food-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .food-tag {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .food-tag:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        @media (max-width: 768px) {
+            .food-header h1 {
+                font-size: 24px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .gi-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .alternatives-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .food-header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="food-container">
+        <div class="food-header">
+            <h1>🔍 Food Search - GI & Sugar Index</h1>
+            <p>Find the Glycemic Index and sugar content of foods for better diabetes management</p>
+        </div>
+        
+        <div class="search-section">
+            <form method="POST" class="search-box">
+                <input type="text" name="search" placeholder="Search a food (e.g., white rice, banana, chicken)..." value="{{ query or '' }}" required>
+                <button type="submit" class="btn-search">Search 🔍</button>
+            </form>
+            <div class="search-hints">
+                💡 Try: rice, bread, pasta, banana, apple, carrot, chicken, milk, etc.
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if results %}
+        <div class="results-container">
+            {% for result in results %}
+            <div class="food-result">
+                <div class="food-header-row">
+                    <div class="food-emoji">{{ result.emoji }}</div>
+                    <div class="food-name">
+                        <h2>{{ result.name }}</h2>
+                        <div class="food-portion">📏 Per {{ result.portion }}</div>
+                    </div>
+                </div>
+                
+                <div class="gi-info">
+                    <div class="info-card">
+                        <div class="info-label">Glycemic Index (GI)</div>
+                        <div class="info-value">{{ result.gi }}</div>
+                        <div class="gi-category gi-{{ result.gi_status.level|lower }}">
+                            {{ result.gi_status.emoji }} {{ result.gi_status.level }}
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Sugar Content</div>
+                        <div class="info-value">{{ result.sugar_per_100g }}g</div>
+                        <div class="advice-box">{{ result.gi_status.advice }}</div>
+                    </div>
+                </div>
+                
+                {% if result.alternatives %}
+                <div class="alternatives-section">
+                    <h3>💡 Better Alternatives</h3>
+                    <div class="alternatives-grid">
+                        {% for alt in result.alternatives %}
+                        <div class="alternative-item">
+                            <div class="alt-emoji">{{ alt.emoji }}</div>
+                            <div class="alt-name">{{ alt.name }}</div>
+                            <div class="alt-gi">GI: <strong>{{ alt.gi }}</strong></div>
+                            <div class="alt-category" style="background: {% if alt.category == 'Low' %}#d4edda; color: #155724;{% elif alt.category == 'Medium' %}#fff3cd; color: #856404;{% else %}#f8d7da; color: #721c24;{% endif %}">
+                                {{ alt.category }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% elif not error and not query %}
+        <div class="popular-foods">
+            <h3>🌟 Popular Foods to Search</h3>
+            <div class="food-tags">
+                <span class="food-tag">🍚 Rice (white)</span>
+                <span class="food-tag">🍚 Rice (brown)</span>
+                <span class="food-tag">🍞 Bread</span>
+                <span class="food-tag">🍝 Pasta</span>
+                <span class="food-tag">🍌 Banana</span>
+                <span class="food-tag">🍎 Apple</span>
+                <span class="food-tag">🥕 Carrot</span>
+                <span class="food-tag">🥔 Potato</span>
+                <span class="food-tag">🍗 Chicken</span>
+                <span class="food-tag">🐟 Fish</span>
+                <span class="food-tag">🥚 Egg</span>
+                <span class="food-tag">🥛 Milk</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+        <a href="{{ url_for('dashboard') }}" style="background:#667eea;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+    </div>
+</body>
+</html>

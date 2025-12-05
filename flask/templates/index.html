@@ -37,6 +37,114 @@
             color: #888;
             margin-top: 2px;
         }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: #2a2a3e;
+            margin: 5% auto;
+            padding: 30px;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            width: 85%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            animation: slideIn 0.3s ease-in-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-close {
+            color: #ff9800;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #ffb74d;
+        }
+        
+        .modal h2 {
+            color: #ff9800;
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .modal ul {
+            color: #ddd;
+            line-height: 2;
+            font-size: 15px;
+        }
+        
+        .modal li {
+            margin: 12px 0;
+        }
+        
+        .modal strong {
+            color: #ffb74d;
+        }
+        
+        .modal-footer {
+            color: #ff9800;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .precautions-button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        
+        .precautions-button:hover {
+            background-color: #ffb74d;
+        }
+        
+        .precautions-button:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
@@ -92,21 +200,54 @@
         {% if prediction %}
         <div class="prediction-result">
             <h2>{{ prediction }}</h2>
-            <p>Confidence: <span class="confidence">{{ confidence }}</span></p>
+            
+            <!-- Risk Level Badge -->
+            {% if risk_level %}
+            <div style="background: #f0f4f8; border-left: 5px solid {{ risk_color if risk_color != 'green' else '#10b981' }}; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h3 style="margin-top: 0; color: #111827;">🎯 Risk Assessment</h3>
+              <p style="margin: 0; font-size: 16px; font-weight: 600; color: #111827;">{{ risk_level }}</p>
+              <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 14px;">{{ risk_details }}</p>
+              {% if data_quality_warning %}
+              <p style="margin: 12px 0 0 0; color: #d97706; font-size: 13px; font-style: italic;">{{ data_quality_warning }}</p>
+              {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Confidence & Probabilities -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              <div style="background: #f0fdf4; border: 2px solid #10b981; padding: 15px; border-radius: 8px;">
+                <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px; font-weight: 600;">Diabetes Free Probability</p>
+                <p style="margin: 0; font-size: 24px; font-weight: 700; color: #10b981;">{{ probability_class0 if probability_class0 else confidence }}</p>
+              </div>
+              <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px;">
+                <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px; font-weight: 600;">Diabetes Presence Probability</p>
+                <p style="margin: 0; font-size: 24px; font-weight: 700; color: #f59e0b;">{{ probability_class1 if probability_class1 else confidence }}</p>
+              </div>
+            </div>
             
             <div class="feature-analysis">
-                <h3>Risk Factor Analysis</h3>
+                <h3>📊 Risk Factor Analysis (Sorted by Importance)</h3>
                 {% for feature in feature_analysis %}
-                <div class="feature-item">
-                    <strong>{{ feature.name }}:</strong> {{ feature.value }}
+                <div class="feature-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 10px; border-radius: 6px; {% if feature.is_abnormal %}background: #fef3c7;{% else %}background: #f9fafb;{% endif %}">
+                    <strong>{{ feature.name }}</strong>
+                    <span style="float: right; font-weight: 600; color: #0b74ff;">{{ feature.importance }}</span>
                     <br>
-                    <small>Contribution to prediction: {{ feature.importance }}</small>
+                    <span style="color: #6b7280;">Value: <strong>{{ feature.value }} {{ feature.unit }}</strong></span>
+                    {% if feature.is_abnormal %}
+                    <span style="color: #f59e0b; margin-left: 10px;">⚠️ {{ feature.status }}</span>
+                    {% else %}
+                    <span style="color: #10b981; margin-left: 10px;">✓ {{ feature.status }}</span>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
             
-            <p style="margin-top: 20px; color: #888;">
-                Note: This tool is for screening purposes only. Please consult with a healthcare professional for proper medical advice and diagnosis.
+            {% if show_precautions %}
+            <button class="precautions-button" onclick="openPrecautionsModal()">⚠️ View Important Precautions</button>
+            {% endif %}
+            
+            <p style="margin-top: 20px; color: #888; font-size: 13px;">
+                <strong>⚕️ Disclaimer:</strong> This tool is for screening purposes only and should not be used for self-diagnosis. Results are based on a machine learning model trained on historical data. Please consult with a healthcare professional for proper medical advice, diagnosis, and treatment.
             </p>
         </div>
         {% endif %}
@@ -116,6 +257,53 @@
             {{ error }}
         </div>
         {% endif %}
+    </div>
+
+    <!-- Precautions Modal -->
+    <div id="precautionsModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closePrecautionsModal()">&times;</span>
+            <h2>⚠️ Important Precautions to Take</h2>
+            <ul>
+                <li><strong>Monitor Blood Sugar:</strong> Check your blood glucose levels regularly as recommended by your doctor</li>
+                <li><strong>Healthy Diet:</strong> Consume low glycemic index foods, whole grains, vegetables, and lean proteins. Avoid sugary drinks and processed foods</li>
+                <li><strong>Regular Exercise:</strong> Aim for at least 150 minutes of moderate exercise per week (walking, swimming, cycling)</li>
+                <li><strong>Maintain Healthy Weight:</strong> Lose weight if overweight through diet and exercise</li>
+                <li><strong>Take Medications:</strong> Follow your doctor's prescribed diabetes medications strictly</li>
+                <li><strong>Regular Check-ups:</strong> Visit your healthcare provider regularly for medical supervision and lab tests</li>
+                <li><strong>Foot Care:</strong> Check your feet daily for sores or injuries and maintain proper foot hygiene</li>
+                <li><strong>Eye Exams:</strong> Get annual dilated eye exams to check for diabetic retinopathy</li>
+                <li><strong>Blood Pressure Control:</strong> Keep your blood pressure within normal range</li>
+                <li><strong>Manage Stress:</strong> Practice relaxation techniques like meditation or yoga</li>
+                <li><strong>Quit Smoking:</strong> Avoid tobacco products completely</li>
+                <li><strong>Limit Alcohol:</strong> Drink alcohol in moderation, if at all</li>
+            </ul>
+            <div class="modal-footer">
+                🏥 Please consult with your healthcare provider immediately for proper diagnosis, treatment plan, and medical advice.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPrecautionsModal() {
+            document.getElementById("precautionsModal").style.display = "block";
+        }
+        
+        function closePrecautionsModal() {
+            document.getElementById("precautionsModal").style.display = "none";
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById("precautionsModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+    
+    <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+        <a href="{{ url_for('dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
     </div>
 </body>
 </html>

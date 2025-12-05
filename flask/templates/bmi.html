@@ -1,0 +1,624 @@
+{% extends "base.html" %}
+{% block title %}Advanced BMI Calculator{% endblock %}
+
+{% block content %}
+<main class="page">
+  <style>
+    .bmi-container {
+      background: white;
+      border-radius: 18px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .bmi-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .bmi-header h1 {
+      font-size: 32px;
+      color: #111827;
+      margin: 0 0 8px 0;
+    }
+
+    .bmi-header p {
+      color: #6b7280;
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: #f9fafb;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input, select {
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0b74ff;
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .btn-calculate {
+      grid-column: 1 / -1;
+      background: #0b74ff;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-calculate:hover {
+      background: #0055d4;
+    }
+
+    /* Result Display */
+    .result-container {
+      margin-top: 30px;
+    }
+
+    .bmi-score-card {
+      background: linear-gradient(135deg, var(--color-start) 0%, var(--color-end) 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .bmi-score-card h2 {
+      margin: 0 0 10px 0;
+      font-size: 48px;
+      font-weight: 700;
+    }
+
+    .bmi-category {
+      font-size: 20px;
+      opacity: 0.95;
+      margin-bottom: 10px;
+    }
+
+    .risk-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .info-card {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #0b74ff;
+    }
+
+    .info-label {
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      color: #111827;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .warning-box {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .warning-box h4 {
+      margin: 0 0 10px 0;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .warning-box p {
+      margin: 0;
+      color: #78350f;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .risk-section {
+      margin-bottom: 30px;
+    }
+
+    .risk-section h3 {
+      color: #111827;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .risk-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .risk-item {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #7f1d1d;
+    }
+
+    .recommendations {
+      background: #ecfdf5;
+      border: 2px solid #10b981;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .recommendations h3 {
+      color: #065f46;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rec-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .rec-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid #d1fae5;
+      color: #065f46;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .rec-list li:last-child {
+      border-bottom: none;
+    }
+
+    .abdominal-info {
+      background: #ede9fe;
+      border: 2px solid #7c3aed;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .abdominal-info h4 {
+      color: #5b21b6;
+      margin: 0 0 8px 0;
+    }
+
+    .abdominal-info p {
+      margin: 0;
+      color: #6b21a8;
+      font-size: 14px;
+    }
+
+    .age-note {
+      background: #dbeafe;
+      border-left: 4px solid #0b74ff;
+      padding: 15px;
+      border-radius: 6px;
+      color: #1e40af;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 2px solid #fecaca;
+    }
+
+    /* BMI Range Chart */
+    .bmi-range-chart {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .bmi-range-chart h3 {
+      margin-top: 0;
+      color: #111827;
+      font-size: 18px;
+    }
+
+    .bmi-scale {
+      display: flex;
+      height: 50px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .bmi-range {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .bmi-range.underweight {
+      background: linear-gradient(90deg, #ff6b6b, #ffa94d);
+      flex: 0 0 15%;
+    }
+
+    .bmi-range.normal {
+      background: linear-gradient(90deg, #51cf66, #69db7c);
+      flex: 0 0 27%;
+    }
+
+    .bmi-range.overweight {
+      background: linear-gradient(90deg, #ffd43b, #ffa94d);
+      flex: 0 0 18%;
+    }
+
+    .bmi-range.obese {
+      background: linear-gradient(90deg, #ff922b, #c92a2a);
+      flex: 0 0 40%;
+    }
+
+    .bmi-scale-labels {
+      display: flex;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    .bmi-label-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bmi-label-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+    }
+
+    .bmi-label-item.underweight .bmi-label-color {
+      background: #ff6b6b;
+    }
+
+    .bmi-label-item.normal .bmi-label-color {
+      background: #51cf66;
+    }
+
+    .bmi-label-item.overweight .bmi-label-color {
+      background: #ffd43b;
+    }
+
+    .bmi-label-item.obese .bmi-label-color {
+      background: #ff922b;
+    }
+
+    .bmi-markers {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #4b5563;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .current-bmi-indicator {
+      position: relative;
+      margin-top: 20px;
+      height: 30px;
+    }
+
+    .indicator-line {
+      position: absolute;
+      width: 3px;
+      height: 100%;
+      background: #000;
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .indicator-label {
+      background: #000;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      margin-top: -25px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .bmi-score-card h2 {
+        font-size: 36px;
+      }
+
+      .bmi-container {
+        padding: 20px;
+      }
+
+      .bmi-scale-labels {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+
+  <div class="bmi-container">
+    <div class="bmi-header">
+      <h1>⚖️ Advanced BMI Calculator</h1>
+      <p>Comprehensive health assessment based on BMI and lifestyle factors</p>
+    </div>
+
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    {% if not result %}
+      <form method="POST" class="form-grid">
+        <div class="form-group">
+          <label for="weight">Weight (kg) *</label>
+          <input type="number" id="weight" name="weight" min="20" max="300" step="0.1" value="70" required>
+          <div class="help-text">Your current body weight</div>
+        </div>
+
+        <div class="form-group">
+          <label for="height">Height (cm) *</label>
+          <input type="number" id="height" name="height" min="100" max="250" step="0.1" value="170" required>
+          <div class="help-text">Your height in centimeters</div>
+        </div>
+
+        <div class="form-group">
+          <label for="age">Age (years) *</label>
+          <input type="number" id="age" name="age" min="1" max="120" value="30" required>
+          <div class="help-text">Your current age</div>
+        </div>
+
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          <div class="help-text">For abdominal fat assessment</div>
+        </div>
+
+        <div class="form-group full">
+          <label for="waist">Waist Circumference (cm) - Optional</label>
+          <input type="number" id="waist" name="waist" min="0" max="200" step="0.1" placeholder="Leave blank if unknown">
+          <div class="help-text">Measured at the narrowest point of waist (for abdominal obesity assessment)</div>
+        </div>
+
+        <button type="submit" class="btn-calculate">Calculate Advanced BMI Report</button>
+      </form>
+    {% endif %}
+
+    {% if result %}
+      <!-- BMI Score Card -->
+      <div class="bmi-score-card" style="--color-start: {{ result.color }}; --color-end: {{ result.color }}aa;">
+        <div>{{ result.emoji }}</div>
+        <h2>{{ result.bmi }}</h2>
+        <div class="bmi-category">{{ result.category }}</div>
+        <div class="risk-badge">Risk Level: {{ result.risk_level }}</div>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-label">Height</div>
+          <div class="info-value">{{ result.height_cm }} cm</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Weight</div>
+          <div class="info-value">{{ result.weight }} kg</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Age</div>
+          <div class="info-value">{{ result.age }} yr</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Target Weight</div>
+          <div class="info-value">{{ result.ideal_min }}-{{ result.ideal_max }} kg</div>
+        </div>
+      </div>
+
+      <!-- BMI Range Chart -->
+      <div class="bmi-range-chart">
+        <h3>📊 BMI Scale Overview (Your Position Highlighted)</h3>
+        
+        <div class="bmi-scale-labels">
+          <div class="bmi-label-item underweight">
+            <div class="bmi-label-color"></div>
+            <span>Underweight (&lt;18.5)</span>
+          </div>
+          <div class="bmi-label-item normal">
+            <div class="bmi-label-color"></div>
+            <span>Normal (18.5-24.9) ✓</span>
+          </div>
+          <div class="bmi-label-item overweight">
+            <div class="bmi-label-color"></div>
+            <span>Overweight (25-29.9)</span>
+          </div>
+          <div class="bmi-label-item obese">
+            <div class="bmi-label-color"></div>
+            <span>Obese (30+)</span>
+          </div>
+        </div>
+
+        <div class="bmi-scale">
+          <div class="bmi-range underweight">< 18.5</div>
+          <div class="bmi-range normal">18.5 - 24.9</div>
+          <div class="bmi-range overweight">25 - 29.9</div>
+          <div class="bmi-range obese">30+</div>
+        </div>
+
+        <div class="bmi-markers">
+          <span>0</span>
+          <span>18.5</span>
+          <span>25</span>
+          <span>30</span>
+          <span>40+</span>
+        </div>
+
+        <div class="current-bmi-indicator">
+          <div class="indicator-line" style="left: {{ (result.bmi / 40) * 100 }}%;">
+            <div class="indicator-label">Your BMI: {{ result.bmi }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weight Status -->
+      {% if result.weight_diff > 0 %}
+        <div class="warning-box">
+          <h4>⚖️ Weight Status</h4>
+          <p>You need to <strong>{{ result.weight_status }} {{ result.weight_diff }} kg</strong> to reach a healthy BMI range (18.5-24.9). Your ideal weight range is <strong>{{ result.ideal_min }} - {{ result.ideal_max }} kg</strong>.</p>
+        </div>
+      {% else %}
+        <div style="background: #d4edda; border: 2px solid #28a745; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+          <h4 style="margin: 0 0 10px 0; color: #155724;">✅ Healthy Weight</h4>
+          <p style="margin: 0; color: #155724; font-size: 14px;">Your weight is within the healthy BMI range. Keep maintaining your healthy lifestyle!</p>
+        </div>
+      {% endif %}
+
+      <!-- Age Note -->
+      <div class="age-note">
+        <strong>Age-Specific Guidance:</strong> {{ result.age_note }}
+      </div>
+
+      <!-- Abdominal Risk -->
+      {% if result.abdominal_risk %}
+        <div class="abdominal-info">
+          <h4>📏 Abdominal Obesity Assessment</h4>
+          <p><strong>Waist Circumference:</strong> {{ result.waist_cm }} cm<br>
+          <strong>Status:</strong> {{ result.abdominal_risk }}</p>
+        </div>
+      {% endif %}
+
+      <!-- Health Risks -->
+      {% if result.health_risks %}
+        <div class="risk-section">
+          <h3>⚠️ Associated Health Risks</h3>
+          <div class="risk-list">
+            {% for risk in result.health_risks %}
+              <div class="risk-item">{{ risk }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Recommendations -->
+      <div class="recommendations">
+        <h3>💡 Personalized Recommendations</h3>
+        <ul class="rec-list">
+          {% for rec in result.recommendations %}
+            <li>{{ rec }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Medical Disclaimer -->
+      <div style="background: #f3f4f6; border-left: 4px solid #6b7280; padding: 15px; border-radius: 6px; font-size: 13px; color: #4b5563;">
+        <strong>⚕️ Medical Disclaimer:</strong> This calculator provides general health information based on BMI. It is not a substitute for professional medical advice. Always consult a healthcare provider for personalized recommendations and diagnosis.
+      </div>
+
+      <!-- Buttons -->
+      <div style="margin-top: 30px; text-align: center;">
+        <form method="POST" style="display: inline;">
+          <button type="submit" class="btn-calculate" style="width: 200px;">Calculate Again</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+    <a href="{{ url_for('dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</main>
+{% endblock %}

@@ -9,6 +9,42 @@
   </p>
 
   <section class="cards">
+    <!-- Risk Calculator -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle red">🧮</div>
+        <div class="card-title">Risk Calculator</div>
+      </div>
+      <div class="card-body">
+        Calculate your diabetes risk based on health metrics and predictive models.
+      </div>
+      <a class="btn-outline red" href="{{ url_for('calculator') }}">→ Open</a>
+    </article>
+
+    <!-- BMI Calculator -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle cyan">⚖️</div>
+        <div class="card-title">BMI Calculator</div>
+      </div>
+      <div class="card-body">
+        Compute your Body Mass Index (BMI) and get health guidance based on your BMI category.
+      </div>
+      <a class="btn-outline cyan" href="{{ url_for('bmi') }}">→ Open</a>
+    </article>
+
+    <!-- Symptoms Checker -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle red">🔍</div>
+        <div class="card-title">Symptoms Checker</div>
+      </div>
+      <div class="card-body">
+        Check your diabetes risk by selecting symptoms you're experiencing right now.
+      </div>
+      <a class="btn-outline red" href="{{ url_for('symptoms_checker') }}">→ Open</a>
+    </article>
+
     <!-- Precautions -->
     <article class="card-dashboard">
       <div class="card-header">
@@ -19,6 +55,18 @@
         Learn essential precautions and preventive measures for managing diabetes effectively.
       </div>
       <a class="btn-outline blue" href="{{ url_for('precautions') }}">→ Open</a>
+    </article>
+
+    <!-- AI Diet Recommendation -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle purple">🤖</div>
+        <div class="card-title">AI Diet Generator</div>
+      </div>
+      <div class="card-body">
+        Get personalized meal plans powered by AI based on your health profile and preferences.
+      </div>
+      <a class="btn-outline purple" href="{{ url_for('diet_recommendation') }}">→ Open</a>
     </article>
 
     <!-- Diet Plans -->
@@ -37,24 +85,12 @@
     <article class="card-dashboard">
       <div class="card-header">
         <div class="card-icon-circle yellow">🔍</div>
-        <div class="card-title">Sugar Levels</div>
+        <div class="card-title">Food Search</div>
       </div>
       <div class="card-body">
-        Look up sugar content in common foods to make informed dietary choices.
+        Search foods to check their GI index, sugar content, and find healthier alternatives.
       </div>
-      <a class="btn-outline yellow" href="{{ url_for('sugar_levels') }}">→ Open</a>
-    </article>
-
-    <!-- Risk Calculator -->
-    <article class="card-dashboard">
-      <div class="card-header">
-        <div class="card-icon-circle red">🧮</div>
-        <div class="card-title">Risk Calculator</div>
-      </div>
-      <div class="card-body">
-        Calculate your diabetes risk based on health metrics and predictive models.
-      </div>
-      <a class="btn-outline red" href="{{ url_for('calculator') }}">→ Open</a>
+      <a class="btn-outline yellow" href="{{ url_for('food_search') }}">→ Open</a>
     </article>
 
     <!-- Exercises -->

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Symptoms Checker</title>
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .symptoms-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .symptoms-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .symptoms-header h1 {
+            font-size: 32px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .symptoms-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .symptom-checkbox {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .symptom-checkbox:hover {
+            border-color: #f5576c;
+            background: #fff5f7;
+        }
+        
+        .symptom-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            margin-top: 2px;
+            accent-color: #f5576c;
+        }
+        
+        .symptom-checkbox input[type="checkbox"]:checked + .symptom-content {
+            color: #f5576c;
+        }
+        
+        .symptom-checkbox input[type="checkbox"]:checked {
+            accent-color: #f5576c;
+        }
+        
+        .symptom-content {
+            flex: 1;
+        }
+        
+        .symptom-label {
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+        
+        .symptom-emoji {
+            font-size: 20px;
+        }
+        
+        .symptom-description {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .symptom-checkbox input[type="checkbox"]:checked ~ .symptom-content .symptom-label {
+            color: #f5576c;
+        }
+        
+        .btn-check {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-check:active {
+            transform: translateY(0);
+        }
+        
+        /* Result Display Styles */
+        .result-container {
+            margin-top: 40px;
+        }
+        
+        .risk-banner {
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .risk-banner.low {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .risk-banner.moderate {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        
+        .risk-banner.high {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .risk-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .risk-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .probability-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .selected-symptoms {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .selected-symptoms h3 {
+            color: #333;
+            margin-top: 0;
+            font-size: 18px;
+        }
+        
+        .symptoms-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .symptom-tag {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #f5576c;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .symptom-tag span {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+        
+        .recommendations-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+        }
+        
+        .recommendations-section h3 {
+            color: #333;
+            margin-top: 0;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .action-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .action-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #f5576c;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .disclaimer {
+            background: #f0f7ff;
+            border: 2px solid #0b74ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            color: #0055d4;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .disclaimer strong {
+            color: #0055d4;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .btn-new-check {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-new-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .symptoms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .symptoms-header h1 {
+                font-size: 24px;
+            }
+            
+            .probability-display {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="symptoms-container">
+        <div class="symptoms-header">
+            <h1>🔍 Symptoms Checker</h1>
+            <p>Assess your diabetes risk by selecting symptoms you're experiencing</p>
+        </div>
+        
+        {% if not show_result %}
+        <form method="POST" class="form-section">
+            <div class="form-title">Select Your Symptoms</div>
+            <div class="symptoms-grid">
+                {% for symptom_key, symptom_data in all_symptoms.items() %}
+                <label class="symptom-checkbox">
+                    <input type="checkbox" name="symptoms" value="{{ symptom_key }}">
+                    <div class="symptom-content">
+                        <div class="symptom-label">
+                            <span class="symptom-emoji">{{ symptom_data.emoji }}</span>
+                            {{ symptom_data.label }}
+                        </div>
+                        <div class="symptom-description">{{ symptom_data.description }}</div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="btn-check">Check Risk Level 🔍</button>
+        </form>
+        {% endif %}
+        
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if show_result and result %}
+        <div class="result-container">
+            <!-- Risk Banner -->
+            <div class="risk-banner {{ result.risk_level }}">
+                <div class="risk-icon">{{ result.recommendations.icon }}</div>
+                <div class="risk-title">{{ result.recommendations.title }}</div>
+                <div class="probability-display">{{ result.probability }}%</div>
+                <div style="font-size: 16px; opacity: 0.9;">Based on {{ result.symptom_count }} reported symptom(s)</div>
+            </div>
+            
+            <!-- Selected Symptoms -->
+            <div class="selected-symptoms">
+                <h3>Your Reported Symptoms</h3>
+                <div class="symptoms-list">
+                    {% for symptom in result.selected_symptoms %}
+                    <div class="symptom-tag">
+                        <span>{{ all_symptoms[symptom.key].emoji }}</span>{{ symptom.label }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="recommendations-section">
+                <h3>📋 What You Should Do Next</h3>
+                <div class="action-list">
+                    {% for action in result.recommendations.actions %}
+                    <div class="action-item">{{ action }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Disclaimer -->
+            <div class="disclaimer">
+                <strong>⚕️ Important Medical Disclaimer:</strong><br>
+                This symptom checker is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. 
+                The results do not constitute medical diagnosis. Please consult with a qualified healthcare provider for proper evaluation and medical advice.
+                If you experience severe symptoms, seek immediate medical attention.
+            </div>
+            
+            <a href="{{ url_for('symptoms_checker') }}" class="btn-new-check">Check Again</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+        <a href="{{ url_for('dashboard') }}" style="background:#f5576c;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+    </div>
+</body>
+</html>
