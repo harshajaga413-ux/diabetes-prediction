@@ -8,6 +8,12 @@
     <h1>Welcome Back</h1>
     <p class="subtitle">Sign in to your account</p>
 
+    {% if error %}
+    <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #dc3545;">
+      <strong>❌ Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
     <form action="{{ url_for('login') }}" method="post">
       <label for="email">Email Address</label>
       <input type="email" id="email" name="email" required />

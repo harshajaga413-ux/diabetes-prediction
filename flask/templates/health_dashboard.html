@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Health Dashboard{% endblock %}
+
+{% block content %}
+<main class="page">
+  <h1 class="headline">📊 Your Health Dashboard</h1>
+  <p class="subtitle-main">Track your wellness journey and monitor your health metrics</p>
+
+  <style>
+    .health-score-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .health-score-number {
+      font-size: 60px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .health-score-label {
+      font-size: 16px;
+      margin: 10px 0 0 0;
+      opacity: 0.95;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #0b74ff;
+    }
+
+    .stat-card h3 {
+      margin: 0 0 10px 0;
+      color: #111827;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0b74ff;
+      margin: 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .feature-btn {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      color: #111827;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .feature-btn:hover {
+      border-color: #0b74ff;
+      box-shadow: 0 4px 12px rgba(11, 116, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .recent-activity {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .recent-activity h3 {
+      margin-top: 0;
+      color: #111827;
+    }
+
+    .activity-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-emoji {
+      margin-right: 8px;
+    }
+  </style>
+
+  <!-- Health Score -->
+  <div class="health-score-card">
+    <p class="health-score-number">{{ health_score }}%</p>
+    <p class="health-score-label">Overall Health Score</p>
+    {% if health_score >= 80 %}
+    <p style="margin: 10px 0 0 0;">✨ Excellent! Keep up your healthy habits!</p>
+    {% elif health_score >= 60 %}
+    <p style="margin: 10px 0 0 0;">👍 Good progress! Focus on logging more activities.</p>
+    {% else %}
+    <p style="margin: 10px 0 0 0;">💪 Start tracking to improve your score!</p>
+    {% endif %}
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Risk Assessments</h3>
+      <p class="value">{{ predictions_count }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Exercises Logged</h3>
+      <p class="value">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Lab Results</h3>
+      <p class="value">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Streak (Days)</h3>
+      <p class="value">0</p>
+    </div>
+  </div>
+
+  <!-- Quick Features -->
+  <h3 style="margin-top: 30px; margin-bottom: 20px;">⚡ Quick Actions</h3>
+  <div class="features-grid">
+    <a href="{{ url_for('log_water') }}" class="feature-btn">
+      <div class="feature-icon">💧</div>
+      <div>Log Water</div>
+    </a>
+    <a href="{{ url_for('log_exercise') }}" class="feature-btn">
+      <div class="feature-icon">🏃</div>
+      <div>Log Exercise</div>
+    </a>
+    <a href="{{ url_for('lab_results') }}" class="feature-btn">
+      <div class="feature-icon">🧪</div>
+      <div>Lab Results</div>
+    </a>
+    <a href="{{ url_for('health_tips_route') }}" class="feature-btn">
+      <div class="feature-icon">💡</div>
+      <div>Health Tips</div>
+    </a>
+    <a href="{{ url_for('faq') }}" class="feature-btn">
+      <div class="feature-icon">❓</div>
+      <div>FAQ</div>
+    </a>
+  </div>
+
+  <!-- Recent Activity -->
+  {% if last_prediction %}
+  <div class="recent-activity">
+    <h3>📝 Last Assessment</h3>
+    <div class="activity-item">
+      <span class="activity-emoji">🩺</span>
+      Your last risk assessment detected: <strong>{{ last_prediction }}</strong>
+    </div>
+  </div>
+  {% endif %}
+
+  <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+    <a href="{{ url_for('dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</main>
+{% endblock %}

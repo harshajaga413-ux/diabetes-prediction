@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Water Intake Tracker{% endblock %}
+
+{% block content %}
+<main class="page">
+  <h1 class="headline">💧 Water Intake Tracker</h1>
+  <p class="subtitle-main">Stay hydrated! Track your daily water consumption</p>
+
+  <style>
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .water-goal {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+    }
+
+    .water-goal h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #51cf66;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .form-section {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #111827;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0b74ff;
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0b74ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0055d4;
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #28a745;
+    }
+
+    .presets {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .preset-btn {
+      padding: 10px;
+      border: 2px solid #e5e7eb;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #6b7280;
+    }
+
+    .preset-btn:hover {
+      border-color: #0b74ff;
+      color: #0b74ff;
+    }
+
+    .tips {
+      background: #dbeafe;
+      border: 2px solid #0b74ff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .tips h4 {
+      margin-top: 0;
+      color: #1e40af;
+    }
+
+    .tips ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .tips li {
+      color: #1e40af;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+  </style>
+
+  <div class="container">
+    {% if message %}
+    <div class="message success">{{ message }}</div>
+    {% endif %}
+
+    <div class="water-goal">
+      <h3>Daily Goal: 8-10 Glasses (2-2.5L)</h3>
+      <p>Today's Progress: <strong>{{ today_water }}ml</strong></p>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ (today_water / 2500) * 100 }}%;">
+          {{ ((today_water / 2500) * 100) | int }}%
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 style="margin-top: 0;">Quick Add</h3>
+      <div class="presets">
+        <button class="preset-btn" onclick="setWaterAmount(250)">250ml</button>
+        <button class="preset-btn" onclick="setWaterAmount(500)">500ml</button>
+        <button class="preset-btn" onclick="setWaterAmount(750)">750ml</button>
+        <button class="preset-btn" onclick="setWaterAmount(1000)">1L</button>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <label for="amount">Amount (ml)</label>
+          <input type="number" id="amount" name="amount" min="50" max="1000" value="250" placeholder="Enter amount in ml">
+        </div>
+        <button type="submit">✅ Log Water</button>
+      </form>
+    </div>
+
+    <div class="tips">
+      <h4>💡 Hydration Tips</h4>
+      <ul>
+        <li>💧 Drink water before, during, and after exercise</li>
+        <li>⏰ Set reminders to drink water every 2 hours</li>
+        <li>🥗 Eat water-rich foods (cucumber, watermelon, oranges)</li>
+        <li>🌡️ In hot weather, increase your water intake</li>
+        <li>☕ Coffee and tea count toward your daily intake</li>
+        <li>⚠️ Avoid sugary drinks - they spike blood sugar</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+    <a href="{{ url_for('health_dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</main>
+
+<script>
+  function setWaterAmount(amount) {
+    document.getElementById('amount').value = amount;
+  }
+</script>
+{% endblock %}

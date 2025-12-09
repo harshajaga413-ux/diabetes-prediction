@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}FAQ - Frequently Asked Questions{% endblock %}
+
+{% block content %}
+<main class="page">
+  <h1 class="headline">❓ Frequently Asked Questions</h1>
+  <p class="subtitle-main">Get answers to common health questions</p>
+
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-item {
+      border-bottom: 2px solid #e5e7eb;
+      padding: 20px 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .faq-question:hover {
+      background: #f3f4f6;
+      padding-left: 20px;
+    }
+
+    .faq-question.active {
+      background: #0b74ff;
+      color: white;
+    }
+
+    .toggle-icon {
+      font-size: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-question.active .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 20px 15px;
+      color: #6b7280;
+      line-height: 1.8;
+      background: #fafbfc;
+      border-left: 4px solid #0b74ff;
+      margin-top: 0;
+      font-size: 14px;
+    }
+
+    .faq-answer.active {
+      display: block;
+    }
+
+    .faq-answer h4 {
+      color: #111827;
+      margin-top: 0;
+    }
+
+    .faq-answer ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    .faq-answer li {
+      margin: 8px 0;
+    }
+
+    .search-box {
+      margin-bottom: 30px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #0b74ff;
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+    }
+
+    .category-filter {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-btn {
+      background: #f3f4f6;
+      color: #111827;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: #0b74ff;
+      color: white;
+    }
+
+    .icon {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+  </style>
+
+  <div class="container">
+    <div class="search-box">
+      <input type="text" id="faqSearch" placeholder="🔍 Search FAQs...">
+    </div>
+
+    <div id="faqList">
+      {% set faq_items = [
+        {
+          'question': '🩺 What is Type 2 Diabetes?',
+          'answer': 'Type 2 diabetes is a condition where the body cannot use insulin effectively (insulin resistance) or doesn\'t produce enough insulin. It accounts for 90-95% of all diabetes cases. Unlike Type 1, it develops gradually and is often linked to lifestyle factors like diet and exercise.'
+        },
+        {
+          'question': '⚠️ What are the symptoms of diabetes?',
+          'answer': 'Common symptoms include: increased thirst, frequent urination, fatigue, blurred vision, slow-healing cuts, numbness in hands or feet, and increased hunger. Some people have no symptoms initially. Early detection through screening is important, especially if you have risk factors.'
+        },
+        {
+          'question': '📊 What is a normal blood sugar level?',
+          'answer': 'Fasting blood sugar (before eating): Normal is below 100 mg/dL, prediabetes is 100-125 mg/dL, diabetes is 126 mg/dL or higher. After meals: Normal is below 140 mg/dL. HbA1c test (3-month average): Normal is below 5.7%, prediabetes is 5.7-6.4%, diabetes is 6.5% or higher.'
+        },
+        {
+          'question': '🥗 What foods should I eat with diabetes?',
+          'answer': 'Focus on: whole grains, lean proteins (fish, chicken, legumes), non-starchy vegetables (leafy greens, broccoli, peppers), and healthy fats (nuts, olive oil). Limit: refined carbohydrates, sugary drinks, processed foods, and high-sodium items. Portion control and timing are important too.'
+        },
+        {
+          'question': '💪 How much exercise do I need?',
+          'answer': 'Aim for at least 150 minutes of moderate-intensity aerobic activity per week (like brisk walking or cycling). Also include strength training 2-3 times per week. Even light activity throughout the day helps. Consult your doctor before starting a new exercise program.'
+        },
+        {
+          'question': '🏥 How often should I check my blood sugar?',
+          'answer': 'This depends on your treatment plan. Those on insulin may check 4+ times daily. Those on oral medications might check 1-2 times daily. Those managing with lifestyle only might check weekly or as recommended by their doctor. Work with your healthcare team to determine the right frequency for you.'
+        },
+        {
+          'question': '💊 What medications are used for diabetes?',
+          'answer': 'Common medications include: metformin (first-line), sulfonylureas, DPP-4 inhibitors, GLP-1 agonists, SGLT2 inhibitors, and insulin. The choice depends on your individual needs and how well they work for you. Some people need a combination of medications.'
+        },
+        {
+          'question': '🔄 Can diabetes be reversed?',
+          'answer': 'Type 2 diabetes cannot be completely cured, but it can be managed well and symptoms can go into remission. Significant weight loss (10-15% of body weight) combined with exercise and diet changes can sometimes reverse the condition. Regular monitoring and medication adherence are crucial.'
+        }
+      ] %}
+
+      {% for item in faq_items %}
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFAQ(this)">
+          <span>{{ item.question }}</span>
+          <span class="toggle-icon">▼</span>
+        </button>
+        <div class="faq-answer">
+          <p>{{ item.answer }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-top: 30px; text-align: center;">
+      <h3 style="margin-top: 0;">👨‍⚕️ Still Have Questions?</h3>
+      <p>Consult with your healthcare provider or call your doctor's office. They can provide personalized medical advice based on your specific situation.</p>
+    </div>
+  </div>
+
+  <script>
+    function toggleFAQ(button) {
+      const answer = button.nextElementSibling;
+      button.classList.toggle('active');
+      answer.classList.toggle('active');
+    }
+
+    document.getElementById('faqSearch').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+        
+        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  </script>
+
+  <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+    <a href="{{ url_for('health_dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</main>
+{% endblock %}

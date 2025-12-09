@@ -216,11 +216,11 @@
             <!-- Confidence & Probabilities -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
               <div style="background: #f0fdf4; border: 2px solid #10b981; padding: 15px; border-radius: 8px;">
-                <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px; font-weight: 600;">Diabetes Free Probability</p>
+                <p style="margin: 0 0 5px 0; color: #000; font-size: 12px; font-weight: 600;">Diabetes Free Probability</p>
                 <p style="margin: 0; font-size: 24px; font-weight: 700; color: #10b981;">{{ probability_class0 if probability_class0 else confidence }}</p>
               </div>
               <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px;">
-                <p style="margin: 0 0 5px 0; color: #6b7280; font-size: 12px; font-weight: 600;">Diabetes Presence Probability</p>
+                <p style="margin: 0 0 5px 0; color: #000; font-size: 12px; font-weight: 600;">Diabetes Presence Probability</p>
                 <p style="margin: 0; font-size: 24px; font-weight: 700; color: #f59e0b;">{{ probability_class1 if probability_class1 else confidence }}</p>
               </div>
             </div>
@@ -229,10 +229,10 @@
                 <h3>📊 Risk Factor Analysis (Sorted by Importance)</h3>
                 {% for feature in feature_analysis %}
                 <div class="feature-item" style="border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 10px; border-radius: 6px; {% if feature.is_abnormal %}background: #fef3c7;{% else %}background: #f9fafb;{% endif %}">
-                    <strong>{{ feature.name }}</strong>
+                    <strong style="color: #000;">{{ feature.name }}</strong>
                     <span style="float: right; font-weight: 600; color: #0b74ff;">{{ feature.importance }}</span>
                     <br>
-                    <span style="color: #6b7280;">Value: <strong>{{ feature.value }} {{ feature.unit }}</strong></span>
+                    <span style="color: #000; font-weight: 500;">Value: <strong>{{ feature.value }} {{ feature.unit }}</strong></span>
                     {% if feature.is_abnormal %}
                     <span style="color: #f59e0b; margin-left: 10px;">⚠️ {{ feature.status }}</span>
                     {% else %}

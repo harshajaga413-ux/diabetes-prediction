@@ -104,6 +104,78 @@
       </div>
       <a class="btn-outline cyan" href="{{ url_for('exercises') }}">→ Open</a>
     </article>
+
+    <!-- Health Dashboard -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle blue">❤️</div>
+        <div class="card-title">Health Dashboard</div>
+      </div>
+      <div class="card-body">
+        View your overall health score, statistics, and track your wellness progress.
+      </div>
+      <a class="btn-outline blue" href="{{ url_for('health_dashboard') }}">→ Open</a>
+    </article>
+
+    <!-- Water Tracker -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle cyan">💧</div>
+        <div class="card-title">Water Tracker</div>
+      </div>
+      <div class="card-body">
+        Track your daily water intake and stay hydrated for optimal health.
+      </div>
+      <a class="btn-outline cyan" href="{{ url_for('log_water') }}">→ Open</a>
+    </article>
+
+    <!-- Exercise Logger -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle green">🏃</div>
+        <div class="card-title">Exercise Logger</div>
+      </div>
+      <div class="card-body">
+        Log your workouts and track calories burned to monitor your fitness progress.
+      </div>
+      <a class="btn-outline green" href="{{ url_for('log_exercise') }}">→ Open</a>
+    </article>
+
+    <!-- Health Tips -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle yellow">💡</div>
+        <div class="card-title">Health Tips</div>
+      </div>
+      <div class="card-body">
+        Get daily health tips and wellness advice for managing diabetes effectively.
+      </div>
+      <a class="btn-outline yellow" href="{{ url_for('health_tips_route') }}">→ Open</a>
+    </article>
+
+    <!-- FAQ -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle purple">❓</div>
+        <div class="card-title">FAQ</div>
+      </div>
+      <div class="card-body">
+        Find answers to frequently asked questions about diabetes and health management.
+      </div>
+      <a class="btn-outline purple" href="{{ url_for('faq') }}">→ Open</a>
+    </article>
+
+    <!-- Lab Results -->
+    <article class="card-dashboard">
+      <div class="card-header">
+        <div class="card-icon-circle red">🧬</div>
+        <div class="card-title">Lab Results</div>
+      </div>
+      <div class="card-body">
+        Track and monitor your lab test results over time for comprehensive health tracking.
+      </div>
+      <a class="btn-outline red" href="{{ url_for('lab_results') }}">→ Open</a>
+    </article>
   </section>
 </main>
 {% endblock %}

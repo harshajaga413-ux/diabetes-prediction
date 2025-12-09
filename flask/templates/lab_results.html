@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block title %}Lab Results Tracker{% endblock %}
+
+{% block content %}
+<main class="page">
+  <h1 class="headline">🧬 Lab Results Tracker</h1>
+  <p class="subtitle-main">Monitor your health test results</p>
+
+  <style>
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .form-section, .results-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section h3, .results-section h3 {
+      margin-top: 0;
+      color: #111827;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #111827;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0b74ff;
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0b74ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #0055d4;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #28a745;
+    }
+
+    .lab-result-item {
+      background: #f9fafb;
+      border-left: 4px solid #0b74ff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .lab-result-item:hover {
+      transform: translateX(5px);
+    }
+
+    .lab-result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .lab-result-header h4 {
+      margin: 0;
+      color: #111827;
+      font-size: 15px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-normal {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-critical {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .lab-result-details {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .lab-result-details p {
+      margin: 5px 0;
+    }
+
+    .value-unit {
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .normal-range {
+      color: #0b74ff;
+      font-size: 12px;
+    }
+
+    .reference-table {
+      margin-top: 20px;
+      background: #f0f4f8;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .reference-table h4 {
+      margin-top: 0;
+      color: #111827;
+    }
+
+    .reference-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 10px;
+      margin: 8px 0;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+    }
+
+    .reference-item strong {
+      color: #0b74ff;
+    }
+
+    @media (max-width: 768px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .no-results {
+      text-align: center;
+      color: #6b7280;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+  </style>
+
+  <div class="container">
+    <div class="two-column">
+      <!-- Add Lab Result Form -->
+      <div class="form-section">
+        <h3>➕ Add Lab Result</h3>
+        
+        {% if message %}
+        <div class="message">{{ message }}</div>
+        {% endif %}
+
+        <form method="POST">
+          <div class="form-group">
+            <label for="test_name">Test Name</label>
+            <select id="test_name" name="test_name" required onchange="updateUnit()">
+              <option value="">Select a test...</option>
+              <option value="Fasting Blood Sugar">Fasting Blood Sugar</option>
+              <option value="HbA1c">HbA1c (Hemoglobin A1c)</option>
+              <option value="Total Cholesterol">Total Cholesterol</option>
+              <option value="LDL Cholesterol">LDL Cholesterol</option>
+              <option value="HDL Cholesterol">HDL Cholesterol</option>
+              <option value="Triglycerides">Triglycerides</option>
+              <option value="Blood Pressure">Blood Pressure</option>
+              <option value="Creatinine">Creatinine</option>
+              <option value="GFR">GFR (Kidney Function)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="result_value">Result Value</label>
+            <input type="number" id="result_value" name="result_value" step="0.01" placeholder="Enter value" required>
+          </div>
+
+          <div class="form-group">
+            <label for="unit">Unit</label>
+            <input type="text" id="unit" name="unit" placeholder="e.g., mg/dL, %" readonly required>
+          </div>
+
+          <div class="form-group">
+            <label for="test_date">Test Date</label>
+            <input type="date" id="test_date" name="test_date" required>
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Notes (Optional)</label>
+            <input type="text" id="notes" name="notes" placeholder="Any observations...">
+          </div>
+
+          <button type="submit">✅ Save Lab Result</button>
+        </form>
+
+        <div class="reference-table">
+          <h4>📋 Reference Ranges</h4>
+          <div class="reference-item">
+            <strong>Fasting Sugar:</strong>
+            <span>Normal: &lt;100 mg/dL</span>
+          </div>
+          <div class="reference-item">
+            <strong>HbA1c:</strong>
+            <span>Normal: &lt;5.7%</span>
+          </div>
+          <div class="reference-item">
+            <strong>Total Cholesterol:</strong>
+            <span>Desirable: &lt;200 mg/dL</span>
+          </div>
+          <div class="reference-item">
+            <strong>HDL:</strong>
+            <span>Optimal: &gt;40 mg/dL (M), &gt;50 (F)</span>
+          </div>
+          <div class="reference-item">
+            <strong>LDL:</strong>
+            <span>Optimal: &lt;100 mg/dL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab Results History -->
+      <div class="results-section">
+        <h3>📊 Results History</h3>
+        
+        {% if results %}
+          {% for result in results | reverse %}
+            <div class="lab-result-item">
+              <div class="lab-result-header">
+                <h4>{{ result.test }}</h4>
+                <span class="status-badge status-{{ 'normal' if result.result < 100 else ('warning' if result.result < 150 else 'critical') }}">
+                  {% if result.result < 100 %}Normal{% elif result.result < 150 %}Warning{% else %}Critical{% endif %}
+                </span>
+              </div>
+              <div class="lab-result-details">
+                <p><span class="value-unit">{{ result.result }} {{ result.unit }}</span></p>
+                <p class="normal-range">📌 Normal Range: {{ result.normal_range }}</p>
+                <p>📅 Date: {{ result.date }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="no-results">
+            <p>No lab results recorded yet.</p>
+            <p style="font-size: 12px;">Add your test results to track your health progress.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+      <h3 style="margin-top: 0;">💡 Lab Monitoring Tips</h3>
+      <ul style="margin-bottom: 0;">
+        <li>🩸 Regular lab tests help monitor diabetes progression</li>
+        <li>🎯 Track trends over time, not just individual results</li>
+        <li>📈 HbA1c should be checked every 3-6 months</li>
+        <li>💊 Share results with your healthcare provider</li>
+        <li>📝 Keep records organized for easier comparison</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const unitMap = {
+      'Fasting Blood Sugar': 'mg/dL',
+      'HbA1c': '%',
+      'Total Cholesterol': 'mg/dL',
+      'LDL Cholesterol': 'mg/dL',
+      'HDL Cholesterol': 'mg/dL',
+      'Triglycerides': 'mg/dL',
+      'Blood Pressure': 'mmHg',
+      'Creatinine': 'mg/dL',
+      'GFR': 'mL/min'
+    };
+
+    function updateUnit() {
+      const testName = document.getElementById('test_name').value;
+      const unit = unitMap[testName] || '';
+      document.getElementById('unit').value = unit;
+    }
+
+    // Set today's date as default
+    document.getElementById('test_date').valueAsDate = new Date();
+  </script>
+
+  <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+    <a href="{{ url_for('health_dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</main>
+{% endblock %}

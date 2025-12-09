@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}Exercise Logger{% endblock %}
+
+{% block content %}
+<main class="page">
+  <h1 class="headline">🏃 Exercise Logger</h1>
+  <p class="subtitle-main">Track your workouts and stay active</p>
+
+  <style>
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #111827;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0b74ff;
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0b74ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0055d4;
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #28a745;
+    }
+
+    .exercise-history {
+      margin-top: 30px;
+    }
+
+    .exercise-item {
+      background: #f0f4f8;
+      border-left: 4px solid #0b74ff;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+    }
+
+    .exercise-item h4 {
+      margin: 0 0 8px 0;
+      color: #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .exercise-item p {
+      margin: 5px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .calories-badge {
+      background: #28a745;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .intensity-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .intensity-badge.light {
+      background: #d1f2eb;
+      color: #0b5345;
+    }
+
+    .intensity-badge.moderate {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .intensity-badge.vigorous {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .exercise-emoji {
+      margin-right: 8px;
+    }
+
+    .tips {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .tips h4 {
+      margin-top: 0;
+      color: white;
+    }
+
+    .tips ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .tips li {
+      color: white;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+  </style>
+
+  <div class="container">
+    {% if message %}
+    <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <div class="form-section">
+      <h3 style="margin-top: 0;">Log Your Exercise</h3>
+      <form method="POST">
+        <div class="form-group">
+          <label for="exercise_type">Exercise Type</label>
+          <select id="exercise_type" name="exercise_type" required>
+            <option value="walking">🚶 Walking</option>
+            <option value="running">🏃 Running</option>
+            <option value="cycling">🚴 Cycling</option>
+            <option value="swimming">🏊 Swimming</option>
+            <option value="yoga">🧘 Yoga</option>
+            <option value="strength">💪 Strength Training</option>
+            <option value="aerobics">🎵 Aerobics</option>
+            <option value="sports">⚽ Sports</option>
+            <option value="other">🏋️ Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Duration (minutes)</label>
+          <input type="number" id="duration" name="duration" min="5" max="480" value="30" required>
+        </div>
+
+        <div class="form-group">
+          <label for="intensity">Intensity Level</label>
+          <select id="intensity" name="intensity" required>
+            <option value="light">🟢 Light</option>
+            <option value="moderate">🟡 Moderate</option>
+            <option value="vigorous">🔴 Vigorous</option>
+          </select>
+        </div>
+
+        <button type="submit">✅ Log Exercise</button>
+      </form>
+    </div>
+
+    {% if exercises %}
+    <div class="exercise-history">
+      <h3>📋 Recent Exercises</h3>
+      {% for exercise in exercises %}
+      <div class="exercise-item">
+        <h4>
+          <span>
+            <span class="exercise-emoji">
+              {% if exercise.type == 'walking' %}🚶
+              {% elif exercise.type == 'running' %}🏃
+              {% elif exercise.type == 'cycling' %}🚴
+              {% elif exercise.type == 'swimming' %}🏊
+              {% elif exercise.type == 'yoga' %}🧘
+              {% elif exercise.type == 'strength' %}💪
+              {% elif exercise.type == 'aerobics' %}🎵
+              {% elif exercise.type == 'sports' %}⚽
+              {% else %}🏋️{% endif %}
+            </span>
+            {{ exercise.type | title }}
+          </span>
+          <span class="calories-badge">{{ exercise.calories_burned | int }} cal</span>
+        </h4>
+        <p><strong>Duration:</strong> {{ exercise.duration }} minutes</p>
+        <p><strong>Intensity:</strong> <span class="intensity-badge {{ exercise.intensity }}">{{ exercise.intensity | title }}</span></p>
+        <p><strong>Date:</strong> {{ exercise.date }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="tips">
+      <h4>💡 Exercise Tips for Diabetes</h4>
+      <ul>
+        <li>🎯 Aim for 150 minutes of moderate activity per week</li>
+        <li>⏰ Exercise at the same time daily to establish routine</li>
+        <li>💧 Stay hydrated during and after exercise</li>
+        <li>🥤 Check blood sugar before and after exercise</li>
+        <li>🍎 Eat a light snack if exercising for more than 1 hour</li>
+        <li>⚡ Combine cardio and strength training for best results</li>
+        <li>🏥 Consult your doctor before starting intense exercise</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
+    <a href="{{ url_for('health_dashboard') }}" style="background:#0b74ff;color:white;padding:10px 20px;border-radius:999px;text-decoration:none;display:inline-block;font-weight:600;">← Back to Dashboard</a>
+  </div>
+</main>
+{% endblock %}

@@ -4,6 +4,9 @@ from flask import Flask, request, render_template, session, redirect, url_for
 import pickle
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import MinMaxScaler
+import json
+import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 # Needed for sessions (login). Change this to any random secret string.
@@ -45,10 +48,13 @@ def train_and_save_model():
     knn = KNeighborsClassifier(n_neighbors=24, metric='minkowski', p=2)
     knn.fit(X_scaled, y)
     
-    return knn, scaler, features
+    # Calculate accuracy
+    accuracy = knn.score(X_scaled, y)
+    
+    return knn, scaler, features, accuracy
 
 # Train model and get components
-model, scaler, features = train_and_save_model()
+model, scaler, features, model_accuracy = train_and_save_model()
 
 def get_feature_importance(input_values):
     """Calculate the relative importance of each feature's contribution"""
@@ -741,11 +747,86 @@ class FoodSearchEngine:
 food_search_engine = FoodSearchEngine()
 
 # ---------------------------------------------------------------------
-#  SIMPLE IN-MEMORY USER STORE (demo only – replace with DB later)
+#  PERSISTENT USER CREDENTIAL STORAGE (using JSON file)
 # ---------------------------------------------------------------------
 
-# key = email, value = {"name": ..., "password": ...}
-users = {}
+# File to store user credentials
+USERS_FILE = 'users_credentials.json'
+
+def load_users():
+    """Load users from JSON file. Create empty file if it doesn't exist."""
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return {}
+    return {}
+
+def save_users(users_dict):
+    """Save users to JSON file."""
+    try:
+        with open(USERS_FILE, 'w') as f:
+            json.dump(users_dict, f, indent=4)
+    except IOError as e:
+        print(f"Error saving users: {e}")
+
+# Load users from file on startup
+users = load_users()
+
+# User health data storage (in-memory; replace with DB later)
+# key = email, value = {predictions: [...], lab_results: [...], water_intake: [...], exercises: [...]}
+user_health_data = {}
+
+# Health tips database
+health_tips = [
+    "💧 Drink 8-10 glasses of water daily to stay hydrated and help regulate blood sugar",
+    "🚴 Walk for 30 minutes daily - it helps improve insulin sensitivity",
+    "🥗 Include fiber-rich foods in every meal to slow sugar absorption",
+    "😴 Get 7-8 hours of quality sleep - poor sleep increases diabetes risk",
+    "🧘 Practice 10 minutes of meditation daily to reduce stress and cortisol levels",
+    "🥤 Replace sugary drinks with water, herbal tea, or unsweetened beverages",
+    "🍎 Eat fruits with skin intact - they contain more fiber and nutrients",
+    "⏱️ Eat slowly and chew thoroughly - aim for 20+ minutes per meal",
+    "💪 Do strength training 2-3 times a week to build muscle and improve glucose control",
+    "📊 Monitor your blood pressure regularly - target is below 130/80 mmHg",
+]
+
+# FAQ Database
+faq_database = {
+    'what_is_diabetes': {
+        'question': 'What is diabetes?',
+        'answer': 'Diabetes is a chronic condition where the body cannot properly regulate blood sugar levels. Type 1 occurs when the pancreas doesn\'t produce insulin. Type 2 occurs when the body becomes resistant to insulin.'
+    },
+    'prediabetes': {
+        'question': 'What is pre-diabetes?',
+        'answer': 'Pre-diabetes means your blood sugar levels are higher than normal but not yet in the diabetic range. It\'s a warning sign, but can often be reversed with lifestyle changes.'
+    },
+    'prevention': {
+        'question': 'Can diabetes be prevented?',
+        'answer': 'Yes! Type 2 diabetes can often be prevented or delayed through weight loss, regular exercise, healthy eating, and stress management. Early intervention is key.'
+    },
+    'diet': {
+        'question': 'What should I eat if I have diabetes?',
+        'answer': 'Focus on: whole grains, lean proteins, vegetables, fruits (in moderation), and healthy fats. Avoid: sugary drinks, processed foods, and excessive salt. Consult a dietitian for personalized advice.'
+    },
+    'exercise': {
+        'question': 'How much exercise do I need?',
+        'answer': 'Aim for at least 150 minutes of moderate-intensity aerobic exercise per week, plus strength training 2-3 times weekly. Even small amounts of activity are beneficial.'
+    },
+    'medication': {
+        'question': 'Do I need medication?',
+        'answer': 'Medication needs vary. Some can manage with lifestyle changes, others need medication. Your doctor will determine this based on your test results and health history.'
+    },
+    'monitoring': {
+        'question': 'How often should I check blood sugar?',
+        'answer': 'Frequency depends on your type and treatment. Type 1 typically checks multiple times daily. Type 2 may check 1-3 times daily or as recommended by doctor.'
+    },
+    'complications': {
+        'question': 'What are diabetes complications?',
+        'answer': 'Long-term complications include: heart disease, kidney disease, eye problems, nerve damage (neuropathy), and foot problems. Regular monitoring and management prevent these.'
+    },
+}
 
 # ---------------------------------------------------------------------
 #  ROOT + AUTH ROUTES
@@ -761,43 +842,55 @@ def root():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    error = None
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
 
         # Basic validation
-        if not name or not email or not password or len(password) < 6:
-            return render_template("register.html")
+        if not name:
+            error = "Name is required."
+        elif not email or "@" not in email:
+            error = "Valid email is required."
+        elif len(password) < 6:
+            error = "Password must be at least 6 characters."
+        elif password != confirm_password:
+            error = "Passwords do not match."
+        elif email in users:
+            error = "Email already registered. Please login or use a different email."
+        else:
+            # Hash the password for security using PBKDF2 (compatible with all Python versions)
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+            users[email] = {"name": name, "password": hashed_password}
+            # Save users to file
+            save_users(users)
+            # After successful registration, go to login page
+            return redirect(url_for("login"))
 
-        if email in users:
-            # Email already registered
-            return render_template("register.html")
-
-        users[email] = {"name": name, "password": password}
-        # After successful registration, go to login page
-        return redirect(url_for("login"))
-
-    return render_template("register.html")
+    return render_template("register.html", error=error)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    error = None
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
 
         user = users.get(email)
-        if not user or user["password"] != password:
-            # Invalid credentials – re-render login
-            return render_template("login.html")
+        if not user:
+            error = "Email not found. Please register first."
+        elif not check_password_hash(user["password"], password):
+            error = "Invalid email or password."
+        else:
+            # Save user in session
+            session["user_email"] = email
+            session["user_name"] = user["name"]
+            return redirect(url_for("dashboard"))
 
-        # Save user in session
-        session["user_email"] = email
-        session["user_name"] = user["name"]
-        return redirect(url_for("dashboard"))
-
-    return render_template("login.html")
+    return render_template("login.html", error=error)
 
 
 @app.route("/logout")
@@ -1001,7 +1094,8 @@ def predict():
             risk_details=risk_details,
             data_quality_warning=data_quality_warning,
             probability_class1=f"{probability[1]*100:.1f}%",
-            probability_class0=f"{probability[0]*100:.1f}%"
+            probability_class0=f"{probability[0]*100:.1f}%",
+            model_accuracy=f"{model_accuracy*100:.2f}%"
         )
                              
     except Exception as e:
@@ -1251,6 +1345,165 @@ def bmi():
             error = f"Error calculating BMI: {str(e)}"
 
     return render_template('bmi.html', result=result, error=error)
+
+
+# -----
+#  HEALTH TRACKING & WELLNESS FEATURES
+# -----
+
+@app.route('/health-dashboard')
+def health_dashboard():
+    if "user_email" not in session:
+        return redirect(url_for("login"))
+    
+    email = session["user_email"]
+    if email not in user_health_data:
+        user_health_data[email] = {
+            'predictions': [],
+            'lab_results': [],
+            'water_intake': [],
+            'exercises': [],
+            'health_score': 0
+        }
+    
+    health_data = user_health_data[email]
+    
+    # Calculate health score (0-100)
+    health_score = 50  # Base score
+    if health_data['lab_results']:
+        health_score += 10
+    if len(health_data['exercises']) >= 3:
+        health_score += 20
+    if health_data['water_intake']:
+        avg_water = sum([w['amount'] for w in health_data['water_intake']]) / len(health_data['water_intake'])
+        if avg_water >= 8:
+            health_score += 15
+    
+    health_score = min(health_score, 100)
+    
+    return render_template('health_dashboard.html',
+                         health_data=health_data,
+                         health_score=int(health_score),
+                         predictions_count=len(health_data['predictions']),
+                         last_prediction=health_data['predictions'][-1] if health_data['predictions'] else None)
+
+
+@app.route('/log-water', methods=['GET', 'POST'])
+def log_water():
+    if "user_email" not in session:
+        return redirect(url_for("login"))
+    
+    email = session["user_email"]
+    message = None
+    
+    if request.method == 'POST':
+        try:
+            amount = float(request.form.get('amount', 250))
+            if email not in user_health_data:
+                user_health_data[email] = {'water_intake': [], 'predictions': [], 'lab_results': [], 'exercises': [], 'health_score': 0}
+            
+            user_health_data[email]['water_intake'].append({
+                'amount': amount,
+                'date': pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')
+            })
+            message = f"✅ Logged {amount}ml of water!"
+        except Exception as e:
+            message = f"❌ Error: {str(e)}"
+    
+    # Calculate today's water intake
+    today_water = 0
+    if email in user_health_data:
+        today = pd.Timestamp.now().strftime('%Y-%m-%d')
+        today_water = sum([w['amount'] for w in user_health_data[email]['water_intake'] if w['date'].startswith(today)])
+    
+    return render_template('water_tracker.html', message=message, today_water=today_water)
+
+
+@app.route('/log-exercise', methods=['GET', 'POST'])
+def log_exercise():
+    if "user_email" not in session:
+        return redirect(url_for("login"))
+    
+    email = session["user_email"]
+    message = None
+    
+    if request.method == 'POST':
+        try:
+            exercise_type = request.form.get('exercise_type', 'walking')
+            duration = int(request.form.get('duration', 30))
+            intensity = request.form.get('intensity', 'moderate')
+            
+            if email not in user_health_data:
+                user_health_data[email] = {'exercises': [], 'predictions': [], 'lab_results': [], 'water_intake': [], 'health_score': 0}
+            
+            user_health_data[email]['exercises'].append({
+                'type': exercise_type,
+                'duration': duration,
+                'intensity': intensity,
+                'date': pd.Timestamp.now().strftime('%Y-%m-%d %H:%M'),
+                'calories_burned': duration * {'light': 3, 'moderate': 5, 'vigorous': 8}.get(intensity, 5)
+            })
+            message = f"✅ Logged {duration} min of {exercise_type}!"
+        except Exception as e:
+            message = f"❌ Error: {str(e)}"
+    
+    exercises_list = []
+    if email in user_health_data:
+        exercises_list = user_health_data[email]['exercises'][-10:]  # Last 10
+    
+    return render_template('exercise_logger.html', message=message, exercises=exercises_list)
+
+
+@app.route('/health-tips')
+def health_tips_route():
+    if "user_email" not in session:
+        return redirect(url_for("login"))
+    
+    return render_template('health_tips.html', tips=health_tips)
+
+
+@app.route('/faq')
+def faq():
+    if "user_email" not in session:
+        return redirect(url_for("login"))
+    
+    return render_template('faq.html', faq_data=faq_database)
+
+
+@app.route('/lab-results', methods=['GET', 'POST'])
+def lab_results():
+    if "user_email" not in session:
+        return redirect(url_for("login"))
+    
+    email = session["user_email"]
+    message = None
+    
+    if request.method == 'POST':
+        try:
+            test_name = request.form.get('test_name', '')
+            result = request.form.get('result', '')
+            unit = request.form.get('unit', '')
+            normal_range = request.form.get('normal_range', '')
+            
+            if email not in user_health_data:
+                user_health_data[email] = {'lab_results': [], 'predictions': [], 'water_intake': [], 'exercises': [], 'health_score': 0}
+            
+            user_health_data[email]['lab_results'].append({
+                'test': test_name,
+                'result': float(result),
+                'unit': unit,
+                'normal_range': normal_range,
+                'date': pd.Timestamp.now().strftime('%Y-%m-%d')
+            })
+            message = f"✅ Lab result recorded: {test_name} = {result} {unit}"
+        except Exception as e:
+            message = f"❌ Error: {str(e)}"
+    
+    lab_results_list = []
+    if email in user_health_data:
+        lab_results_list = user_health_data[email]['lab_results']
+    
+    return render_template('lab_results.html', message=message, results=lab_results_list)
 
 
 if __name__ == "__main__":
